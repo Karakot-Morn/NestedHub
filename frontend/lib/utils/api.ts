@@ -1,4 +1,6 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+import { API_BASE_URL } from '@/lib/api/config';
+
+const BASE_URL = API_BASE_URL;
 
 export interface PropertyApiResponse {
   total: number;
@@ -150,7 +152,7 @@ export async function fetchReviewsForProperty(
   );
 
   // Construct the full URL here
-  const url = `${BASE_URL}properties/${propertyId}/reviews`; // Fixed potential previous path error here too
+  const url = `${BASE_URL}/api/properties/${propertyId}/reviews`; // Fixed potential previous path error here too
 
   // IMPORTANT: Log the full URL
   console.log(`[API Fetcher] fetchReviewsForProperty: Request URL: ${url}`);

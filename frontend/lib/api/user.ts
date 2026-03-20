@@ -24,6 +24,8 @@ export interface UserSearchParams {
   limit?: number;
 }
 
+import { API_BASE_URL } from './config';
+
 export const userApi = {
   // List users with pagination and filters
   listUsers: async (params: UserSearchParams = {}): Promise<User[]> => {
@@ -35,7 +37,7 @@ export const userApi = {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users?${queryParams.toString()}`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -59,7 +61,7 @@ export const userApi = {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users?${queryParams.toString()}`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -74,9 +76,9 @@ export const userApi = {
   },
 
   // Get dashboard stats (for accurate counts)
-  getDashboardStats: async (): Promise<{ totalUsers: number; totalPropertyOwners: number }> => {
+  getDashboardStats: async (): Promise<{ totalUsers: number; totalProperties: number; totalPropertyOwners: number }> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/admin/dashboard/stats`,
+      `${API_BASE_URL}/api/admin/dashboard/stats`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -93,7 +95,7 @@ export const userApi = {
   // Get user by ID
   getUser: async (userId: number): Promise<User> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`,
+      `${API_BASE_URL}/api/users/${userId}`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -115,7 +117,7 @@ export const userApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users/${userId}?${queryParams.toString()}`,
       {
         method: 'DELETE',
         headers: await getAuthHeaders(),
@@ -131,7 +133,7 @@ export const userApi = {
   // Ban/Unban user
   toggleUserBan: async (userId: number, ban: boolean): Promise<User> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/ban?ban=${ban}`,
+      `${API_BASE_URL}/api/users/${userId}/ban?ban=${ban}`,
       {
         method: 'PATCH',
         headers: await getAuthHeaders(),
@@ -149,7 +151,7 @@ export const userApi = {
   // Approve property owner
   approvePropertyOwner: async (userId: number): Promise<User> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/approve`,
+      `${API_BASE_URL}/api/users/${userId}/approve`,
       {
         method: 'PATCH',
         headers: await getAuthHeaders(),
@@ -167,7 +169,7 @@ export const userApi = {
   // Reject property owner
   rejectPropertyOwner: async (userId: number): Promise<void> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/reject`,
+      `${API_BASE_URL}/api/users/${userId}/reject`,
       {
         method: 'DELETE',
         headers: await getAuthHeaders(),
@@ -183,7 +185,7 @@ export const userApi = {
   // Get pending property owner approvals
   getPendingApprovals: async (): Promise<User[]> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/pending-approvals`,
+      `${API_BASE_URL}/api/users/pending-approvals`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',

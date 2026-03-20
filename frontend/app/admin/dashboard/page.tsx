@@ -10,7 +10,8 @@ import StatCard from "@/component/admin/card";
 // If getAuthHeaders is part of your user-api.ts and relies on localStorage
 // then it should be fine.
 import { getAuthHeaders } from "@/lib/api/auth";
-import { useAuthContext } from "@/lib/context/AuthContext"; // <-- CORRECTED IMPORT
+import { useAuthContext } from "@/lib/context/AuthContext";
+import { userApi } from "@/lib/api/user";
 
 interface DashboardStats {
   totalUsers: number;
@@ -34,53 +35,19 @@ export default function AdminDashboardPage() {
     // Only attempt to fetch if authentication is loaded, user is authenticated,
     // user object exists, and user role is admin.
     if (authLoading || !isAuthenticated || !user || user.role !== "admin") {
-      // If authLoading is true, it means the auth state is still being determined.
-      // If not authenticated or not an admin, we should redirect.
-      // This 'return' here prevents the fetch if conditions aren't met,
-      // and the useEffect below will handle the redirection.
       return;
     }
 
     try {
-      // Ensure NEXT_PUBLIC_API_URL is correctly set in your .env file
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const headers = getAuthHeaders(); // This should be able to get tokens from localStorage via user-api.ts
-
-      const response = await fetch(`${apiUrl}/api/admin/dashboard/stats`, {
-        method: "GET",
-        // credentials: 'include' is generally used for sending cookies,
-        // if your auth is token-based via Headers (Bearer token), this might not be strictly necessary
-        // but often harmless. Keep it if your backend uses sessions/cookies too.
-        credentials: "include",
-        headers: headers,
-        cache: "no-store", // Disable caching to ensure fresh data
+      const statsData = await userApi.getDashboardStats();
+      setStats({
+        totalUsers: statsData.totalUsers,
+        totalProperties: statsData.totalProperties,
+        totalPropertyOwners: statsData.totalPropertyOwners,
       });
-
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthenticated or unauthorized, redirect to admin login
-          router.replace("/admin/login");
-          return; // Stop execution after redirect
-        }
-
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          errorData?.message ||
-            `API Error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      setStats(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching dashboard stats:", err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(
-          "Failed to load dashboard statistics. Please try again later."
-        );
-      }
+      setError(err.message || "Failed to load dashboard statistics. Please try again later.");
     } finally {
       setIsLoading(false);
     }

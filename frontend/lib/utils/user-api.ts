@@ -19,13 +19,9 @@ import {
 
 // IMPORTANT: Ensure this matches your FastAPI backend's base URL.
 // Use environment variables for production (e.g., process.env.NEXT_PUBLIC_API_BASE_URL)
-let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+import { API_BASE_URL } from '@/lib/api/config';
 
-if (!baseUrl.endsWith("/api")) {
-  baseUrl = `${baseUrl.replace(/\/+$/, "")}/api`;
-}
-
-const BASE_URL = baseUrl;
+const BASE_URL = `${API_BASE_URL}/api`;
 
 // Cloudinary Configuration (Publicly accessible keys for direct unsigned upload)
 // IMPORTANT: CLOUDINARY_API_SECRET MUST NOT BE EXPOSED ON THE CLIENT-SIDE.

@@ -131,12 +131,18 @@ export default function UserHomePage() {
     communes,
   } = usePropertyFilters();
 
+  // Memoize filters to prevent infinite re-renders
+  const newListingsFilters = useMemo(() => ({ sort_by: "listed_at", sort_order: "desc" }), []);
+  const housesFilters = useMemo(() => ({ category_id: houseId }), [houseId]);
+  const apartmentsFilters = useMemo(() => ({ category_id: apartmentId }), [apartmentId]);
+  const roomsFilters = useMemo(() => ({ category_id: roomId }), [roomId]);
+
   // --- Fetching data for each section separately ---
   const {
     properties: newListings,
     isLoading: isLoadingNewListings,
     error: errorNewListings,
-  } = usePropertyData("", { sort_by: "listed_at", sort_order: "desc" }, 0, 6, false);
+  } = usePropertyData("", newListingsFilters, 0, 6, false);
 
   const {
     properties: houses,
@@ -144,7 +150,7 @@ export default function UserHomePage() {
     error: errorHouses,
   } = usePropertyData(
     "",
-    { category_id: houseId },
+    housesFilters,
     0,
     3,
     !houseId
@@ -156,7 +162,7 @@ export default function UserHomePage() {
     error: errorApartments,
   } = usePropertyData(
     "",
-    { category_id: apartmentId },
+    apartmentsFilters,
     0,
     3,
     !apartmentId
@@ -168,7 +174,7 @@ export default function UserHomePage() {
     error: errorRooms,
   } = usePropertyData(
     "",
-    { category_id: roomId },
+    roomsFilters,
     0,
     3,
     !roomId

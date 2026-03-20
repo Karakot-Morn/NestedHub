@@ -1,4 +1,5 @@
 import { getAuthHeaders } from './auth';
+import { API_BASE_URL } from './config';
 
 export interface User {
   user_id: number;
@@ -24,6 +25,7 @@ export interface UserSearchParams {
   limit?: number;
 }
 
+
 export const adminApi = {
   // List users with pagination and filters
   listUsers: async (params: UserSearchParams = {}): Promise<User[]> => {
@@ -35,7 +37,7 @@ export const adminApi = {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/search?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users/search?${queryParams.toString()}`,
       {
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -59,7 +61,7 @@ export const adminApi = {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/search?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users/search?${queryParams.toString()}`,
       {
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -76,7 +78,7 @@ export const adminApi = {
   // Get user by ID
   getUser: async (userId: number): Promise<User> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`,
+      `${API_BASE_URL}/api/users/${userId}`,
       {
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -98,7 +100,7 @@ export const adminApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users/${userId}?${queryParams.toString()}`,
       {
         method: 'DELETE',
         headers: getAuthHeaders(),
@@ -114,7 +116,7 @@ export const adminApi = {
   // Ban/Unban user
   toggleUserBan: async (userId: number, ban: boolean): Promise<User> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/ban?ban=${ban}`,
+      `${API_BASE_URL}/api/users/${userId}/ban?ban=${ban}`,
       {
         method: 'PATCH',
         headers: getAuthHeaders(),
@@ -132,7 +134,7 @@ export const adminApi = {
   // Approve property owner
   approvePropertyOwner: async (userId: number): Promise<User> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/approve`,
+      `${API_BASE_URL}/api/users/${userId}/approve`,
       {
         method: 'PATCH',
         headers: getAuthHeaders(),
@@ -150,7 +152,7 @@ export const adminApi = {
   // Reject property owner
   rejectPropertyOwner: async (userId: number): Promise<void> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/reject`,
+      `${API_BASE_URL}/api/users/${userId}/reject`,
       {
         method: 'DELETE',
         headers: getAuthHeaders(),
@@ -166,7 +168,7 @@ export const adminApi = {
   // Get pending property owner approvals
   getPendingApprovals: async (): Promise<User[]> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/pending-approvals`,
+      `${API_BASE_URL}/api/users/pending-approvals`,
       {
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -190,7 +192,7 @@ export const adminApi = {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/count?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/users/count?${queryParams.toString()}`,
       {
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -223,7 +225,7 @@ export const adminApi = {
   // Logout user
   logout: async (token: string): Promise<void> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/revoke`,
+      `${API_BASE_URL}/api/users/revoke`,
       {
         method: 'POST',
         headers: {

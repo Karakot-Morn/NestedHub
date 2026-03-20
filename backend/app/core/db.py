@@ -58,10 +58,14 @@ def get_or_create(session: Session, model, **kwargs):
 
 
 def init_db(session: Session) -> None:
-    # Load Property Categories from CSV
-    pass
+    # Check if database is already initialized
+    if session.exec(select(Property)).first():
+        logger.info("Database already initialized, skipping init_db.")
+        return
 
-    ''' with open('app/data/property_features.csv', mode='r', newline='', encoding='utf-8') as file:
+    # Load Property Categories from CSV
+    
+    with open('app/data/property_features.csv', mode='r', newline='', encoding='utf-8') as file:
         reader = csv.DictReader(file)
 
         feature_names = set()
@@ -204,49 +208,51 @@ def init_db(session: Session) -> None:
     # BEGIN SAMPLE DATA
 
     # Initialize Users
-    users = [
-        User(name="Sokha Meas", email="sokha.meas@example.com", phone="+85512345678", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Chantha Kim", email="chantha.kim@example.com", phone="+85598765432", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/chantha_kim.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Rathana Sovann", email="rathana.sovann@example.com", phone="+85591234567", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Srey Pov", email="srey.pov@example.com", phone="+85587654321", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/srey_pov.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Vannak Chea", email="vannak.chea@example.com", phone="+85576543210", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Sophea Lim", email="sophea.lim@example.com", phone="+85512398765", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Dara Seng", email="dara.seng@example.com", phone="+85523456789", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/dara_seng.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Maly Noun", email="maly.noun@example.com", phone="+85534567890", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Rithy Phon", email="rithy.phon@example.com", phone="+85545678901", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Sokunthea Chhay", email="sokunthea.chhay@example.com", phone="+85556789012", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/sokunthea_chhay.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Vuthy Sok", email="vuthy.sok@example.com", phone="+85567890123", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Sreylin Mao", email="sreylin.mao@example.com", phone="+85578901234", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Chhay Leang", email="chhay.leang@example.com", phone="+85589012345", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/chhay_leang.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Sokhom Vong", email="sokhom.vong@example.com", phone="+85590123456", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Thida Sam", email="thida.sam@example.com", phone="+85512344321", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Borey Keo", email="borey.keo@example.com", phone="+85523455432", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/borey_keo.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Sreyneang Ouk", email="sreyneang.ouk@example.com", phone="+85534566543", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Vannara Tep", email="vannara.tep@example.com", phone="+85545677654", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
-        User(name="Pich Sopheak", email="pich.sopheak@example.com", phone="+85556788765", hashed_password=get_password_hash("password123"), role=UserRole.property_owner,
-             is_email_verified=True, is_approved=True, is_active=True, id_card_url="https://example.com/id_cards/pich_sopheak.jpg", created_at=datetime.now(timezone.utc)),
-        User(name="Chenda Nguon", email="chenda.nguon@example.com", phone="+85567899876", hashed_password=get_password_hash("password123"),
-             role=UserRole.customer, is_approved=True, is_email_verified=True, is_active=True, created_at=datetime.now(timezone.utc)),
+    user_data = [
+        {"name": "Sokha Meas", "email": "sokha.meas@example.com", "phone": "+85512345678", "role": UserRole.customer},
+        {"name": "Chantha Kim", "email": "chantha.kim@example.com", "phone": "+85598765432", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/chantha_kim.jpg"},
+        {"name": "Rathana Sovann", "email": "rathana.sovann@example.com", "phone": "+85591234567", "role": UserRole.customer},
+        {"name": "Srey Pov", "email": "srey.pov@example.com", "phone": "+85587654321", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/srey_pov.jpg"},
+        {"name": "Vannak Chea", "email": "vannak.chea@example.com", "phone": "+85576543210", "role": UserRole.customer},
+        {"name": "Sophea Lim", "email": "sophea.lim@example.com", "phone": "+85512398765", "role": UserRole.customer},
+        {"name": "Dara Seng", "email": "dara.seng@example.com", "phone": "+85523456789", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/dara_seng.jpg"},
+        {"name": "Maly Noun", "email": "maly.noun@example.com", "phone": "+85534567890", "role": UserRole.customer},
+        {"name": "Rithy Phon", "email": "rithy.phon@example.com", "phone": "+85545678901", "role": UserRole.customer},
+        {"name": "Sokunthea Chhay", "email": "sokunthea.chhay@example.com", "phone": "+85556789012", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/sokunthea_chhay.jpg"},
+        {"name": "Vuthy Sok", "email": "vuthy.sok@example.com", "phone": "+85567890123", "role": UserRole.customer},
+        {"name": "Sreylin Mao", "email": "sreylin.mao@example.com", "phone": "+85578901234", "role": UserRole.customer},
+        {"name": "Chhay Leang", "email": "chhay.leang@example.com", "phone": "+85589012345", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/chhay_leang.jpg"},
+        {"name": "Sokhom Vong", "email": "sokhom.vong@example.com", "phone": "+85590123456", "role": UserRole.customer},
+        {"name": "Thida Sam", "email": "thida.sam@example.com", "phone": "+85512344321", "role": UserRole.customer},
+        {"name": "Borey Keo", "email": "borey.keo@example.com", "phone": "+85523455432", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/borey_keo.jpg"},
+        {"name": "Sreyneang Ouk", "email": "sreyneang.ouk@example.com", "phone": "+85534566543", "role": UserRole.customer},
+        {"name": "Vannara Tep", "email": "vannara.tep@example.com", "phone": "+85545677654", "role": UserRole.customer},
+        {"name": "Pich Sopheak", "email": "pich.sopheak@example.com", "phone": "+85556788765", "role": UserRole.property_owner, "id_card_url": "https://example.com/id_cards/pich_sopheak.jpg"},
+        {"name": "Chenda Nguon", "email": "chenda.nguon@example.com", "phone": "+85567899876", "role": UserRole.customer},
     ]
-    session.add_all(users)
+    
+    users = []
+    for data in user_data:
+        user = session.exec(select(User).where(User.email == data["email"])).first()
+        if not user:
+            user = User(
+                name=data["name"],
+                email=data["email"],
+                phone=data["phone"],
+                hashed_password=get_password_hash("password123"),
+                role=data["role"],
+                is_approved=True,
+                is_email_verified=True,
+                is_active=True,
+                id_card_url=data.get("id_card_url"),
+                created_at=datetime.now(timezone.utc)
+            )
+            session.add(user)
+            users.append(user)
+        else:
+            users.append(user)
+            logger.info(f"User {data['email']} already exists, skipping.")
+    
     session.flush()  # Assign user IDs
 
     # Define districts and communes for Phnom Penh (city_id=21)
@@ -491,4 +497,4 @@ def init_db(session: Session) -> None:
             "Data and admin user successfully inserted into the database!")
     except IntegrityError as e:
         session.rollback()
-        logger.error("Error inserting data:", e)'''
+        logger.error("Error inserting data:", e)

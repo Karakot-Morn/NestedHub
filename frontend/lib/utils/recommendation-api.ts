@@ -1,6 +1,6 @@
-// lib/utils/recommendation-api.ts
+import { API_BASE_URL, RECOMMENDATION_API_BASE_URL } from '@/lib/api/config';
 
-// (Keep all your type definitions as they are)
+// --- Type Definitions ---
 export type Media = {
     media_url: string;
     media_type: string;
@@ -52,8 +52,8 @@ export type RecommendedPropertyIdsResponse = {
     property_ids: number[];
 };
 
-const BACKEND_1_BASE_URL = process.env.NEXT_PUBLIC_API_RECOMMENDATION_BASE_URL || "http://localhost:8001"; // Your first backend
-const BACKEND_2_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000" ; // Your second backend
+const BACKEND_1_BASE_URL = RECOMMENDATION_API_BASE_URL; // Your first backend (recommendation service)
+const BACKEND_2_BASE_URL = API_BASE_URL; // Your second backend (main API)
 
 /**
  * Fetches a list of recommended property IDs for a given user.

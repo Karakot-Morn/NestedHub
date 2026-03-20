@@ -1110,10 +1110,10 @@ def get_owner_properties(session: Session, user: User) -> List[PropertyOwnerList
         HTTPException: If user is not a property owner or not approved.
     """
     # Validate user role and approval
-    if user.role != UserRole.property_owner:
+    if user.role not in [UserRole.property_owner, UserRole.admin]:
         raise HTTPException(
-            status_code=403, detail="Only property owners can access their listings")
-    if not user.is_approved:
+            status_code=403, detail="Only property owners or admins can access their listings")
+    if user.role == UserRole.property_owner and not user.is_approved:
         raise HTTPException(
             status_code=403, detail="Account awaiting approval")
 
@@ -1158,10 +1158,10 @@ def get_property_stats(
     Raises:
         HTTPException: If user is not a property owner or not approved.
     """
-    if user.role != UserRole.property_owner:
+    if user.role not in [UserRole.property_owner, UserRole.admin]:
         raise HTTPException(
-            status_code=403, detail="Only property owners can access property stats")
-    if not user.is_approved:
+            status_code=403, detail="Only property owners or admins can access property stats")
+    if user.role == UserRole.property_owner and not user.is_approved:
         raise HTTPException(
             status_code=403, detail="Account awaiting approval")
 

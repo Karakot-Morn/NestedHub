@@ -5,7 +5,7 @@ import { getAuthHeaders } from './auth'; // Assuming getAuthHeaders is in auth.t
 // Correct API_BASE_URL: This should be the base URL of your backend server,
 // without the '/api' part, as that will be appended in the fetch call.
 // So if your backend server is at 'http://localhost:8000', use that.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+import { API_BASE_URL } from './config';
 
 export const compareProperties = async (propertyIds: string[] | number[]) => {
   const headers = {

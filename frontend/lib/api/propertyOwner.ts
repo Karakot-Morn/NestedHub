@@ -1,5 +1,7 @@
 import { getAuthHeaders } from './auth';
 
+import { API_BASE_URL } from './config';
+
 // Dashboard data for property owner
 export const propertyOwnerApi = {
   // Get auth headers for API calls
@@ -8,14 +10,14 @@ export const propertyOwnerApi = {
   // Fetch dashboard data for the logged-in property owner
   getDashboard: async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/property-owner/dashboard`,
+      `${API_BASE_URL}/api/properties/stats`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
       }
     );
     if (!response.ok) {
-      throw new Error('Failed to fetch dashboard data');
+      throw new Error('Failed to fetch stats');
     }
     return response.json();
   },
@@ -23,7 +25,7 @@ export const propertyOwnerApi = {
   // Fetch all properties owned by the logged-in property owner
   getMyProperties: async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/my-listings`,
+      `${API_BASE_URL}/api/properties/my-listings`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -60,27 +62,27 @@ export const propertyOwnerApi = {
     return { properties: [] };
   },
 
-  // Fetch owner settings
+  // Fetch owner settings (current user profile)
   getSettings: async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/property-owner/settings`,
+      `${API_BASE_URL}/api/users/me`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
       }
     );
     if (!response.ok) {
-      throw new Error('Failed to fetch settings');
+      throw new Error('Failed to fetch profile settings');
     }
     return response.json();
   },
 
-  // Update owner settings
-  updateSettings: async (data: any) => {
+  // Update owner settings - this usually requires a user_id
+  updateSettings: async (userId: number, data: any) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/property-owner/settings`,
+      `${API_BASE_URL}/api/users/${userId}`,
       {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...(await getAuthHeaders()),
@@ -90,7 +92,7 @@ export const propertyOwnerApi = {
       }
     );
     if (!response.ok) {
-      throw new Error('Failed to update settings');
+      throw new Error('Failed to update profile');
     }
     return response.json();
   },
@@ -98,7 +100,7 @@ export const propertyOwnerApi = {
   // Request to become a property owner (signup)
   requestSignup: async (data: any) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/property-owner/signup`,
+      `${API_BASE_URL}/api/users/register`,
       {
         method: 'POST',
         headers: {
@@ -106,11 +108,11 @@ export const propertyOwnerApi = {
           ...(await getAuthHeaders()),
         },
         credentials: 'include',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, role: 'property_owner' }),
       }
     );
     if (!response.ok) {
-      throw new Error('Failed to request property owner signup');
+      throw new Error('Failed to register as property owner');
     }
     return response.json();
   },
@@ -118,7 +120,7 @@ export const propertyOwnerApi = {
   // Logout for property owner
   logout: async (token: string) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/revoke`,
+      `${API_BASE_URL}/api/users/revoke`,
       {
         method: 'POST',
         headers: {
@@ -156,7 +158,7 @@ export const propertyOwnerApi = {
   // Fetch all viewing requests for properties owned by the current user
   getOwnerViewingRequests: async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/viewing-requests/owner/requests`,
+      `${API_BASE_URL}/api/viewing-requests/owner/requests`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -171,7 +173,7 @@ export const propertyOwnerApi = {
   // Fetch upcoming viewing requests for properties owned by the current user
   getOwnerUpcomingViewingRequests: async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/viewing-requests/owner/upcoming`,
+      `${API_BASE_URL}/api/viewing-requests/owner/upcoming`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -186,7 +188,7 @@ export const propertyOwnerApi = {
   // Accept a viewing request
   acceptViewingRequest: async (requestId: number) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/viewing-requests/${requestId}/accept`,
+      `${API_BASE_URL}/api/viewing-requests/${requestId}/accept`,
       {
         method: 'POST',
         headers: await getAuthHeaders(),
@@ -202,7 +204,7 @@ export const propertyOwnerApi = {
   // Deny a viewing request
   denyViewingRequest: async (requestId: number) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/viewing-requests/${requestId}/deny`,
+      `${API_BASE_URL}/api/viewing-requests/${requestId}/deny`,
       {
         method: 'POST',
         headers: await getAuthHeaders(),

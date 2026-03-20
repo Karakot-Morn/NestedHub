@@ -2,14 +2,7 @@
 import { WishListResponse } from "@/lib/types";
 import { getAccessToken, clearTokens } from "@/lib/utils/user-api";
 
-// Define a constant for the API base URL.
-// It tries to get it from environment variables first,
-// and falls back to a default development URL if not set.
-// This is executed once when the module is loaded.
-const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-
-// Log the resolved API_BASE_URL
-console.log(`[wishlist-api.ts] API_BASE_URL resolved to: ${API_BASE_URL}`);
+import { API_BASE_URL } from "@/lib/api/config";
 
 // Helper for authenticated requests
 export async function fetchAuthenticated<T>(

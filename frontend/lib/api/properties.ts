@@ -24,7 +24,9 @@ export interface PropertyResponse {
   per_page: number
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+import { API_BASE_URL } from './config'
+
+const API_URL = API_BASE_URL
 
 export async function fetchProperties(params: {
   type?: string

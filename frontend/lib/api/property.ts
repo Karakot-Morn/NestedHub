@@ -31,6 +31,7 @@ export interface PropertyCountResponse {
   pending_properties: number;
 }
 
+import { API_BASE_URL } from './config';
 
 export const propertyApi = {
   // Search for properties
@@ -43,7 +44,7 @@ export const propertyApi = {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/properties?${queryParams.toString()}`,
       {
         headers: getAuthHeaders(),
         credentials: 'include',
@@ -60,7 +61,7 @@ export const propertyApi = {
   // Get a single property by ID
   getProperty: async (propertyId: string): Promise<Property> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/${propertyId}`,
+      `${API_BASE_URL}/api/properties/${propertyId}`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -77,7 +78,7 @@ export const propertyApi = {
   // Update a property
   updateProperty: async (propertyId: string, data: PropertyUpdateParams): Promise<Property> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/${propertyId}`,
+      `${API_BASE_URL}/api/properties/${propertyId}`,
       {
         method: 'PATCH',
         headers: {
@@ -100,7 +101,7 @@ export const propertyApi = {
   // Get property counts
   getPropertyCounts: async (): Promise<PropertyCountResponse> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/count`,
+      `${API_BASE_URL}/api/properties/count`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -117,7 +118,7 @@ export const propertyApi = {
   // Delete a property
   deleteProperty: async (propertyId: string): Promise<void> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/${propertyId}`,
+      `${API_BASE_URL}/api/properties/${propertyId}`,
       {
         method: 'DELETE',
         headers: await getAuthHeaders(),
@@ -133,7 +134,7 @@ export const propertyApi = {
   // Get property stats for the current owner
   getOwnerStats: async (): Promise<{ total_owned: number; total_rented: number }> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/stats`,
+      `${API_BASE_URL}/api/properties/stats`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
@@ -148,7 +149,7 @@ export const propertyApi = {
   // Create a new property
   createProperty: async (data: any): Promise<Property> => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/`,
+      `${API_BASE_URL}/api/properties/`,
       {
         method: 'POST',
         headers: {
@@ -173,7 +174,7 @@ export const propertyApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/properties/my-listings?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/properties/my-listings?${queryParams.toString()}`,
       {
         headers: await getAuthHeaders(),
         credentials: 'include',
