@@ -217,3 +217,5 @@ export default function RentalPropertiesPage() {
     </AdminSidebar>
   );
 }
+
+
