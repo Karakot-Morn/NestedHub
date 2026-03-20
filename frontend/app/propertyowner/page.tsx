@@ -4,3 +4,5 @@ export default function PropertyOwnerPage() {
   redirect("/propertyowner/dashboard")
   return null
 }
+
+
