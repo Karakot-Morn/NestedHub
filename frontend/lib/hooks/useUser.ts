@@ -72,3 +72,4 @@ export function useUser(): UseUserResult {
 
   return { user, isLoading, error, isAuthenticated, refetchUser, logout };
 }
+

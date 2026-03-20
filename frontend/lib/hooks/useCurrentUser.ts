@@ -77,3 +77,4 @@ export function useCurrentUser(): CurrentUserState {
     refetchCurrentUser,
   };
 }
+

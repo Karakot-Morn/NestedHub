@@ -114,3 +114,4 @@ def remove_review(
     """
     delete_review(session, review_id, current_user.user_id, current_user.role)
     return None
+

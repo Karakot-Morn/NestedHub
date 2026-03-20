@@ -42,3 +42,4 @@ export function usePublicUser(userId: number | undefined): UsePublicUserResult {
 
   return { publicUser, isLoadingPublicUser, errorPublicUser };
 }
+

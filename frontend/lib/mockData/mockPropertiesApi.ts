@@ -265,3 +265,4 @@ export async function getPropertiesByType(categoryName: string, limit?: number):
 }
 
 export const mockApiPropertyData = mockApiProperties;
+

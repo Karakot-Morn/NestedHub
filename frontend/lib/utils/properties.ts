@@ -53,3 +53,4 @@ export const mapApiPropertyToPropertyWithImage = (property: PropertyApiResponse[
     return null; // Return null if there's an error during mapping
   }
 };
+
