@@ -119,3 +119,4 @@ export const getOwnerUpcomingViewingRequests = (): Promise<ViewingRequestRespons
 export const getViewingRequestById = (requestId: number): Promise<ViewingRequestResponse> => {
   return fetchAuthenticated<ViewingRequestResponse>(`/viewing-requests/${requestId}`, 'GET');
 };
+

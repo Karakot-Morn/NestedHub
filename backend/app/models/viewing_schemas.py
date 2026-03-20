@@ -26,3 +26,4 @@ class ViewingRequestResponse(ViewingRequestBase):
 
     class Config:
         from_attributes = True
+

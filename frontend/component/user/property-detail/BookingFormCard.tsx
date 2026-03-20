@@ -259,3 +259,4 @@ export function BookingFormCard({ propertyId, propertyStatus }: BookingFormCardP
     </Card>
   );
 }
+
