@@ -54,3 +54,4 @@ export async function getUserProperties(userId: number): Promise<PropertyRead[]>
   const response = await fetchUnauthenticated<PropertyRead[]>(`/properties/user/${userId}`, 'GET');
   return response;
 }
+
