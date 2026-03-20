@@ -39,3 +39,4 @@ export const useUserProperties = (): UseUserPropertiesResult => {
 
   return { properties, isLoading, error, fetchProperties };
 };
+
