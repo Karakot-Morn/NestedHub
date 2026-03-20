@@ -197,3 +197,5 @@ def get_owner_upcoming_viewings_request(db: Session, user_id: int) -> List[Viewi
         .where(ViewingRequest.status.in_([ViewingRequestStatusEnum.pending, ViewingRequestStatusEnum.accepted]))
     )
     return db.exec(statement).all()
+
+
