@@ -49,3 +49,4 @@ export const compareProperties = async (propertyIds: string[] | number[]) => {
     throw error;
   }
 };
+

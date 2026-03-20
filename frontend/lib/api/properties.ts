@@ -63,3 +63,4 @@ export async function fetchNewListings(limit = 6) {
 export async function fetchPropertiesByType(type: string, limit = 6) {
   return fetchProperties({ type, limit })
 } 
+
