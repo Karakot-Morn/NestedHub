@@ -30,3 +30,4 @@ export const sortOptions = [
   { value: "bedrooms", label: "Most Bedrooms", order: "desc" },
   { value: "floor_area", label: "Largest Area", order: "desc" },
 ]
+

@@ -22,3 +22,4 @@ export const renderStars = (rating: number) => {
   }
   return stars;
 };
+

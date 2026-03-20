@@ -27,3 +27,4 @@ export default function SearchBar({ searchQuery, setSearchQuery }: SearchBarProp
     </div>
   )
 }
+

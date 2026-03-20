@@ -53,3 +53,4 @@ export function useUserDetail(userId: number | undefined): UseUserDetailResult {
 
   return { user, isLoadingUser, errorUser };
 }
+
