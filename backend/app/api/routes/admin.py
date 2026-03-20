@@ -47,3 +47,4 @@ async def get_dashboard_stats(
             status_code=500,
             detail=f"Error fetching dashboard stats: {str(e)}"
         ) 
+
