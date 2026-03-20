@@ -48,3 +48,4 @@ export function usePropertySelection() {
     isPropertySelected: useCallback((propertyId: number) => selectedPropertyIds.includes(propertyId), [selectedPropertyIds]),
   };
 }
+
