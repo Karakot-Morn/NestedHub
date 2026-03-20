@@ -183,3 +183,4 @@ export const useViewingRequestById = (requestId: number) => {
   // The fetcher function itself will handle the case where the request might not exist or be loaded yet.
   return useFetch<ViewingRequestResponse>(() => getViewingRequestById(requestId), {} as ViewingRequestResponse, [requestId]);
 };
+
