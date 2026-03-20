@@ -283,3 +283,5 @@ class PropertyView(SQLModel, table=True):
 
 #     user: "User" = Relationship(back_populates="time_spent_records")
 #     property: "Property" = Relationship(back_populates="time_spent_records")
+
+
