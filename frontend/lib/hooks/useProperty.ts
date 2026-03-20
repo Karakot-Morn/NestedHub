@@ -41,3 +41,4 @@ export function useProperty(propertyId: string): UsePropertyResult {
 
   return { property, isLoading, error };
 }
+

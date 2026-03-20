@@ -24,3 +24,4 @@ export function PropertyFeaturesBadges({ features }: PropertyFeaturesBadgesProps
     </div>
   );
 }
+

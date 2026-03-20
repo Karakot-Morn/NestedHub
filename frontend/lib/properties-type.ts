@@ -64,3 +64,4 @@ export interface WishListResponse {
   // If the API returns more details about the property within the wishlist, add them here
   // For example: property_title?: string;
 }
+

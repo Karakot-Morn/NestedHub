@@ -58,3 +58,4 @@ export function PropertyOverviewTable({ property }: PropertyOverviewTableProps) 
     </div>
   );
 }
+
