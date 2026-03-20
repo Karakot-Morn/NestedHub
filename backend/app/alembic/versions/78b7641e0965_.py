@@ -33,3 +33,5 @@ def downgrade():
                type_=sa.NUMERIC(precision=2, scale=2),
                existing_nullable=True)
     # ### end Alembic commands ###
+
+
