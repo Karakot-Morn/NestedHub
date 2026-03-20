@@ -35,3 +35,5 @@ def send_email(
             status_code=500,
             detail=f"Failed to send verification email: {str(e)}"
         )
+
+

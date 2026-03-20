@@ -9,3 +9,5 @@ docker compose down -v --remove-orphans # Remove possibly previous broken stacks
 docker compose up -d
 docker compose exec -T backend bash scripts/tests-start.sh "$@"
 docker compose down -v --remove-orphans
+
+

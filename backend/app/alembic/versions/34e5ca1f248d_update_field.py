@@ -29,3 +29,5 @@ def downgrade():
     op.drop_index(op.f('ix_user_role'), table_name='user')
     op.drop_index(op.f('ix_user_is_approved'), table_name='user')
     # ### end Alembic commands ###
+
+

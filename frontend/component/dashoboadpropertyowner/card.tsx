@@ -16,3 +16,5 @@ export default function Card({ title, value, icon }: CardProps) {
     </div>
   )
 }
+
+

@@ -28,3 +28,5 @@ def send_verification_email(*, email: str, verification_token: str) -> None:
 if __name__ == "__main__":
     send_verification_email(email="khinnara99@gmail.com",
                             verification_token="test123")
+
+

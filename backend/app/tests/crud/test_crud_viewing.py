@@ -395,3 +395,4 @@ def test_get_owner_upcoming_viewings_request(db_session, test_owner, setup_commo
     assert len(result) == 1
     assert result[0].request_id == 1
     db_session.commit()
+

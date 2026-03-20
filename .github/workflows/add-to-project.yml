@@ -16,3 +16,5 @@ jobs:
         with:
           project-url: https://github.com/orgs/fastapi/projects/2
           github-token: ${{ secrets.PROJECTS_TOKEN }}
+
+

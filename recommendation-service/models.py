@@ -125,3 +125,5 @@ class PropertyLocation(SQLModel, table=True):
     longitude: Optional[float] = Field(default=None)
     property: Optional["Property"] = Relationship(
         back_populates="property_location")
+
+

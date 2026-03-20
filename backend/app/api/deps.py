@@ -172,3 +172,5 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
             detail="Only admins can perform this action",
         )
     return current_user
+
+

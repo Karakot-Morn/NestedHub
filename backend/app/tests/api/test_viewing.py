@@ -302,3 +302,5 @@ def test_get_owner_upcoming_viewings_api(client, db_session, setup_common_data):
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]["request_id"] == 1
+
+

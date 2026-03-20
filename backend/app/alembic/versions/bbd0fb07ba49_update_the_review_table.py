@@ -32,3 +32,5 @@ def downgrade():
     # 2. Then drop the ENUM type
     review_status_enum = psql.ENUM('pending', 'approved', 'rejected', name='reviewstatusenum')
     review_status_enum.drop(op.get_bind())
+
+

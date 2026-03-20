@@ -114,3 +114,4 @@ def clear_user_wishlist(session: Session, user_id: int) -> None:
         session.delete(item)
     
     session.commit()
+

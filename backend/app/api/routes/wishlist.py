@@ -69,3 +69,5 @@ def clear_wishlist(
     """
     clear_user_wishlist(session, current_user.user_id)
     return None
+
+
