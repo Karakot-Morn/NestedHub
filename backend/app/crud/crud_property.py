@@ -1307,3 +1307,5 @@ def get_property_counts(
         logger.error(f"Unexpected error in get_property_counts: {str(e)}")
         raise HTTPException(
             status_code=500, detail="Unexpected error occurred")
+
+

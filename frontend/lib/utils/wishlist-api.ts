@@ -167,3 +167,4 @@ export async function clearWishlist(): Promise<void | null> {
     "DELETE"
   );
 }
+

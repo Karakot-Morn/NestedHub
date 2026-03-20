@@ -176,3 +176,4 @@ export async function deleteReview(reviewId: number): Promise<void> {
   // fetchAuthenticated is designed to return null for 204 No Content, which matches Promise<void>.
   return fetchAuthenticated<void>(`/reviews/${reviewId}`, 'DELETE');
 }
+

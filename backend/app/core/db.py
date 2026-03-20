@@ -498,3 +498,5 @@ def init_db(session: Session) -> None:
     except IntegrityError as e:
         session.rollback()
         logger.error("Error inserting data:", e)
+
+

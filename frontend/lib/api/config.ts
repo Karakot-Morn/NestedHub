@@ -43,3 +43,5 @@ export const API_ENDPOINTS = {
   ME: `${API_BASE_URL}/api/users/me`,
   RECOMMENDATIONS: `${RECOMMENDATION_API_BASE_URL}/recommend/hybrid`,
 };
+
+

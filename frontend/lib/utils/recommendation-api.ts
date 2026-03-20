@@ -158,3 +158,4 @@ export async function getPropertiesByIds(propertyIds: number[], limit: number = 
     return [];
   }
 }
+
