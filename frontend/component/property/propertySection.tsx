@@ -87,3 +87,4 @@ export default function PropertySection({ // <--- ONLY ONE export default here
     </section>
   )
 }
+

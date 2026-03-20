@@ -49,3 +49,4 @@ export function PropertyLocationMap({ location }: PropertyLocationMapProps) {
     </div>
   );
 }
+

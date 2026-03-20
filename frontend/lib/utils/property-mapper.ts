@@ -24,3 +24,4 @@ export function mapApiPropertyToPropertyCardDisplay(
     rating: apiProperty.rating !== null ? apiProperty.rating : undefined,
   };
 }
+
