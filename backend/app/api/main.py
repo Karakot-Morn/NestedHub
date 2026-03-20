@@ -15,3 +15,5 @@ api_router.include_router(wishlist_router, tags=["Wishlist"])
 api_router.include_router(review_router, tags=["Reviews"])
 api_router.include_router(viewing_router, tags=["Viewing Requests"])
 api_router.include_router(admin_router, tags=["Admin"])
+
+
