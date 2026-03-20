@@ -181,3 +181,4 @@ export interface User {
   is_approved: boolean;
   is_active: boolean;
 }
+

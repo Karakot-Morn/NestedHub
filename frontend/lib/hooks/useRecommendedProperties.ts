@@ -114,3 +114,5 @@ export function useRecommendedProperties({
 
   return { recommendedProperties, isLoading, error };
 }
+
+

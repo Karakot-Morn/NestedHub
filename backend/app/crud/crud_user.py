@@ -861,3 +861,5 @@ def get_user_count(
         query = query.where(User.is_approved == is_approved)
 
     return session.exec(query).first() or 0
+
+

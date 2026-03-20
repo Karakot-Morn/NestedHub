@@ -219,3 +219,5 @@ async def hybrid_recommendations(user_id: int, session: Session = Depends(get_se
 @app.on_event("startup")
 async def on_startup():
     pass
+
+
