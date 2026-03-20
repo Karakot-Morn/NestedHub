@@ -105,3 +105,4 @@ export function PropertyDetailsSection({ property, owner }: PropertyDetailsSecti
     </div>
   );
 }
+

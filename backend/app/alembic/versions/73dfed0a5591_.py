@@ -41,3 +41,5 @@ def downgrade():
     op.drop_constraint(None, 'propertyview', type_='foreignkey')
     op.create_foreign_key('propertyview_user_id_fkey', 'propertyview', 'user', ['user_id'], ['user_id'])
     # ### end Alembic commands ###
+
+

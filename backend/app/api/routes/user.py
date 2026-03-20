@@ -640,3 +640,5 @@ def ban_user(
         is_approved=user.is_approved,
         is_active=user.is_active
     )
+
+
