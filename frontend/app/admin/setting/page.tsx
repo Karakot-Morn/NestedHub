@@ -86,3 +86,5 @@ export default function AdminSettingPage() {
     </AdminSidebar>
   );
 }
+
+

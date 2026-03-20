@@ -85,3 +85,4 @@ export const usePropertyComparison = (propertyIds: number[]): UsePropertyCompari
         refetch,
     };
 };
+

@@ -262,3 +262,4 @@ class PropertyCountResponse(BaseModel):
     rented: int
     class Config:
         from_attributes = True
+

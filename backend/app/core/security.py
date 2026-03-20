@@ -141,3 +141,5 @@ def get_password_hash(password: str) -> str:
         The hashed password.
     """
     return pwd_context.hash(password)
+
+
