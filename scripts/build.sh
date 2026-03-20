@@ -8,3 +8,5 @@ FRONTEND_ENV=${FRONTEND_ENV-production} \
 docker-compose \
 -f docker-compose.yml \
 build
+
+

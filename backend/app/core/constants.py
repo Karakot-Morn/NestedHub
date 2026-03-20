@@ -11,3 +11,4 @@ VERIFICATION_EMAIL_SUBJECT = "Email Verification Code"
 VERIFICATION_EMAIL_BODY = lambda code: f"Your verification code is: {code}\nValid for 10 minutes."
 RESET_PASSWORD_EMAIL_SUBJECT = "Password Reset Code"
 RESET_PASSWORD_EMAIL_BODY = lambda code: f"Your password reset code is: {code}\nValid for 10 minutes."
+

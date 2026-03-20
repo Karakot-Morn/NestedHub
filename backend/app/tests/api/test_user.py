@@ -125,3 +125,5 @@ def test_verify_email_end_to_end(client, db_session, no_current_user):
     assert "access_token" in data
     assert "refresh_token" in data
     assert data["token_type"] == "bearer"
+
+

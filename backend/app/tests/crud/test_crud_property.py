@@ -520,3 +520,4 @@ def test_get_owner_properties(db_session, test_user, setup_common_data):
     assert len(result) == 1
     assert result[0].title == "Test Property"
     db_session.commit()
+

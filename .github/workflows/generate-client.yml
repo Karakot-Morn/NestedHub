@@ -42,3 +42,5 @@ jobs:
         git add frontend/src/client
         git diff --staged --quiet || git commit -m "✨ Autogenerate frontend client"
         git push
+
+

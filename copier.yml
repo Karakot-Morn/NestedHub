@@ -98,3 +98,5 @@ _answers_file: .copier/.copier-answers.yml
 
 _tasks:
   - "python .copier/update_dotenv.py"
+
+

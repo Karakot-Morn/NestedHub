@@ -39,3 +39,5 @@ def downgrade():
                nullable=False)
     op.drop_column('revokedtoken', 'created_at')
     # ### end Alembic commands ###
+
+

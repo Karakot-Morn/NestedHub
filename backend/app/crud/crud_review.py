@@ -252,3 +252,4 @@ def delete_review(session: Session, review_id: int, user_id: int, user_role: Use
     
     # Update property rating since a review was removed
     update_property_rating(session, property_id)
+

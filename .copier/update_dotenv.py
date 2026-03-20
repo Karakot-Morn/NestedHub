@@ -24,3 +24,5 @@ for line in env_content.splitlines():
     else:
         lines.append(line)
 env_path.write_text("\n".join(lines))
+
+

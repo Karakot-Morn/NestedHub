@@ -22,3 +22,4 @@ class ReviewResponse(BaseModel):
 
 class ReviewStatusUpdate(BaseModel):
     status: ReviewStatusEnum  # Strictly "approved" or "rejected"
+

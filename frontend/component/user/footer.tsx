@@ -82,3 +82,5 @@ export default function Footer({ userType = "user" }: FooterProps) {
     </footer>
   )
 }
+
+

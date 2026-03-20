@@ -14,3 +14,5 @@ def create_random_item(db: Session) -> Item:
     description = random_lower_string()
     item_in = ItemCreate(title=title, description=description)
     return crud_property.create_item(session=db, item_in=item_in, owner_id=owner_id)
+
+
