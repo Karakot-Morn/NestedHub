@@ -70,7 +70,6 @@ export async function fetchAuthenticated<T>(
 ): Promise<T> {
   const token = getAccessToken();
   if (!token) {
-    console.error("Authentication token is missing for authenticated request.");
     clearTokens(); // Ensure any stale tokens are removed
     throw new Error("Authentication required: No token found.");
   }

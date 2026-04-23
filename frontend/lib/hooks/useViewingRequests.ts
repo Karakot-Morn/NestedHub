@@ -28,25 +28,29 @@ import {
 function useFetch<T>(
   fetcher: () => Promise<T>,
   initialData: T,
-  dependencies: React.DependencyList = []
+  dependencies: React.DependencyList = [],
+  enabled: boolean = true
 ) {
   const [data, setData] = useState<T>(initialData);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!enabled) return;
     setLoading(true);
     setError(null);
     try {
       const result = await fetcher();
       setData(result);
     } catch (err: any) {
-      console.error("Error during fetch:", err);
+      if (err.message !== "Authentication required: No token found.") {
+        console.error("Error during fetch:", err);
+      }
       setError(err);
     } finally {
       setLoading(false);
     }
-  }, dependencies); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [...dependencies, enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchData();
@@ -76,7 +80,9 @@ function useMutation<TResult, TVariables>(
       setData(result);
       return result; // Allow component to get the result immediately
     } catch (err: any) {
-      console.error("Error during mutation:", err);
+      if (err.message !== "Authentication required: No token found.") {
+        console.error("Error during mutation:", err);
+      }
       setError(err);
       throw err; // Re-throw to allow component to catch and handle in its own try/catch
     } finally {
@@ -102,8 +108,8 @@ export const useCreateViewingRequest = () => {
  * Hook to retrieve all viewing requests made by the current user.
  * Provides data, loading, error, and refetch capabilities.
  */
-export const useUserViewingRequests = () => {
-  return useFetch<ViewingRequestResponse[]>(getUserViewingRequests, []);
+export const useUserViewingRequests = (enabled: boolean = true) => {
+  return useFetch<ViewingRequestResponse[]>(getUserViewingRequests, [], [], enabled);
 };
 
 /**

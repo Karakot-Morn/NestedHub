@@ -35,7 +35,7 @@ export const mapApiPropertyToPropertyWithImage = (property: PropertyApiResponse[
     // Check if the conversion resulted in a valid number
     const formattedPrice = isNaN(numericRentPrice)
       ? 'N/A' // Or a default value if the price is invalid
-      : `$${numericRentPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+      : `${numericRentPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
 
     return {
       id: property.property_id.toString(), // Convert property_id to string if it's a number from API

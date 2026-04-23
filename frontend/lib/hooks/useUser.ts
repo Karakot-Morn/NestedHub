@@ -1,6 +1,6 @@
 // lib/hooks/useUser.ts
 import { useState, useEffect, useCallback } from 'react';
-import { getCurrentUser, clearTokens } from '@/lib/utils/user-api'; // Use the getCurrentUser from your user-api.ts
+import { getCurrentUser, clearTokens, getAccessToken } from '@/lib/utils/user-api'; // Use the getCurrentUser from your user-api.ts
 import { UserResponse } from '@/lib/user'; // Assuming this is your User type from '@/lib/user'
 
 interface UseUserResult {
@@ -22,6 +22,14 @@ export function useUser(): UseUserResult {
   const fetchUserData = useCallback(async () => {
     setIsLoading(true);
     setError(null); // Clear any previous errors
+
+    const token = getAccessToken();
+    if (!token) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       // getCurrentUser should internally check for the access token

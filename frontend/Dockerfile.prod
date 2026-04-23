@@ -1,5 +1,5 @@
 # Use official Node.js base image as build stage
-FROM node:18.18.0-alpine AS base
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN ls -la /app/.next
 # --- END DEBUGGING LINES ---
 
 # Runner stage (production image)
-FROM node:18.18.0-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 

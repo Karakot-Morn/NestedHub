@@ -383,14 +383,71 @@ def init_db(session: Session) -> None:
         )
         session.add(pricing)
 
-    # Initialize Property Media with valid image URLs from Lorem Picsum
-    for property in properties:
-        for i in range(random.randint(3, 6)):
-            seed = f"{property.property_id}_{i}"
+    # Initialize Property Media with valid image URLs from Unsplash based on category
+    category_images = {
+        "Apartment": [
+            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1502672260266-1c1de2d9d344?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1527030280862-64139fba04ca?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1501183638710-841dd1904538?auto=format&fit=crop&w=800&q=60"
+        ],
+        "House": [
+            "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c47?auto=format&fit=crop&w=800&q=60"
+        ],
+        "Room": [
+            "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1559599101-f09736c399af?auto=format&fit=crop&w=800&q=60",
+            "https://images.unsplash.com/photo-1512918766775-739031c6993c?auto=format&fit=crop&w=800&q=60"
+        ]
+    }    # Shuffle pools once to ensure a random distribution that is consistent
+    for cat in category_images:
+        random.shuffle(category_images[cat])
+
+    for i, property in enumerate(properties):
+        # Fetch the category name for the current property
+        category_name = session.exec(select(PropertyCategory).where(PropertyCategory.category_id == property.category_id)).first().category_name
+        
+        # Get the list of images for this category, fallback to House if something goes wrong
+        image_pool = category_images.get(category_name, category_images["House"])
+        
+        # Main image: uniquely selected based on the property's sequence index (i)
+        # This ensures every property gets a different main image from the pool.
+        main_image = image_pool[i % len(image_pool)]
+        
+        # Additional gallery images: Pick a few more unique images from the rest of the pool
+        # (excluding the one we just picked for the main image)
+        other_pool = [img for img in image_pool if img != main_image]
+        num_additional = random.randint(2, min(5, len(other_pool)))
+        selected_additional = random.sample(other_pool, num_additional)
+        
+        all_selected = [main_image] + selected_additional
+        
+        for selected_image in all_selected:
             media = PropertyMedia(
                 property_id=property.property_id,
-                # You can adjust the size if needed
-                media_url=f"https://picsum.photos/seed/{seed}/600/350",
+                media_url=selected_image,
                 media_type=MediaType.image,
             )
             session.add(media)

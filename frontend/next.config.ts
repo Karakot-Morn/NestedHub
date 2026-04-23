@@ -21,12 +21,25 @@ const nextConfig: NextConfig = {
         port: "", // Cloudinary does not use a specific port for image serving
         pathname: "/**", // This allows any path from your Cloudinary cloud (e.g., /image/upload/...)
       },
+      {
+        protocol: "https",
+        hostname: "loremflickr.com",
+        port: "",
+        pathname: "/**",
+      },
       // --- ADD THIS ENTRY FOR GOOGLE PROFILE PICTURES ---
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
         port: "", // Google image servers do not use a specific port
         pathname: "/**", // This allows any path from Google's user content domain
+      },
+      // --- ADD THIS ENTRY FOR UNSPLASH ---
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },

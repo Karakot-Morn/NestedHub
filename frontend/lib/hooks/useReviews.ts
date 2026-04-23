@@ -12,6 +12,7 @@ import {
   ReviewStatusUpdate,
   ReviewStatusEnum,
 } from "@/lib/utils/reviewFetcher";
+import { getAccessToken } from "@/lib/utils/user-api";
 
 // Re-exporting Review from reviewFetcher for consistency
 export type { ReviewResponse as Review } from "@/lib/utils/reviewFetcher";
@@ -81,6 +82,11 @@ export const useMyReviews = (): UseMyReviewsResult => {
   const [error, setError] = useState<Error | null>(null);
 
   const fetchReviews = useCallback(async () => {
+    const token = getAccessToken();
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {

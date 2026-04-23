@@ -32,7 +32,7 @@ export default function Header({ userType = "user" }: HeaderProps) {
 
   // Use the useUserViewingRequests hook to get viewing requests
   const { data: userViewingRequests, loading: loadingViewingRequests } =
-    useUserViewingRequests();
+    useUserViewingRequests(isAuthenticated);
 
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
