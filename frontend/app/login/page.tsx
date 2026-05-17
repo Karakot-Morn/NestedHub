@@ -343,8 +343,6 @@ export default function LoginPage() {
               </>
             )}
           </button>
-        </div>
-
         {/* Footer Links - Added Register button/link */}
         <div className="text-center space-y-2 pt-4">
           <p className="text-gray-600 text-base">
@@ -356,6 +354,7 @@ export default function LoginPage() {
               Register here
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </div>

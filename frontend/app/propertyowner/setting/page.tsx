@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 
 import Sidebar from "@/component/dashoboadpropertyowner/sidebar";
 import { useCurrentUser } from "@/lib/hooks/useCurrentUser";
@@ -100,14 +100,17 @@ export default function SettingsPage() {
           <h2 className="text-lg font-medium mb-4">User Profile</h2>
           <div className="flex flex-col md:flex-row gap-6 bg-white p-6 rounded-lg border">
             <div className="flex-shrink-0">
-              <div className="relative w-24 h-24">
-                <Image
-                  src={currentUser?.profile_picture_url || "/avatar-placeholder.png"}
-                  alt="User Avatar"
-                  width={96}
-                  height={96}
-                  className="rounded-full border-4 border-white shadow object-cover"
-                />
+              <div className="relative w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow">
+                {currentUser?.profile_picture_url && currentUser.profile_picture_url.trim() !== "" ? (
+                  <Image
+                    src={currentUser.profile_picture_url}
+                    alt="User Avatar"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <User className="h-12 w-12 text-gray-500" />
+                )}
               </div>
             </div>
 

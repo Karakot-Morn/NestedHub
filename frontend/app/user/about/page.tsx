@@ -41,8 +41,8 @@ export default function AboutUsPage() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative rounded-lg overflow-hidden shadow-lg">
               <Image
-                src="/luxury-house-with-pool.jpg" // Changed to a more descriptive placeholder image path
-                alt="Luxury house with pool at night"
+                src="/modern-house.jpg" // Updated to an existing image
+                alt="Modern luxury house"
                 width={600}
                 height={400}
                 layout="responsive" // Make image responsive

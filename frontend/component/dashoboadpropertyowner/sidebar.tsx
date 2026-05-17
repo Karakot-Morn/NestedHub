@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { LayoutDashboard, Home, Settings, LogOut, Calendar } from "lucide-react"
+import { LayoutDashboard, Home, Settings, LogOut, Calendar, User } from "lucide-react"
 import { getCurrentUser } from '@/lib/utils/user-api'
 
 interface SidebarProps {
@@ -115,10 +115,10 @@ export default function Sidebar({ children }: SidebarProps) {
                 <div className="text-xs text-gray-500">{user.email}</div>
               </div>
               <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                {user.profile_picture_url ? (
-                  <Image src={user.profile_picture_url} alt="User Avatar" width={40} height={40} />
+                {user.profile_picture_url && user.profile_picture_url.trim() !== "" ? (
+                  <Image src={user.profile_picture_url} alt="User Avatar" width={40} height={40} className="object-cover h-full w-full" />
                 ) : (
-                  <Image src="/avatar-placeholder.png" alt="User Avatar" width={40} height={40} />
+                  <User className="h-6 w-6 text-gray-500" />
                 )}
               </div>
             </div>
