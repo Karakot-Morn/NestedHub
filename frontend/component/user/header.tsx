@@ -15,7 +15,7 @@ import {
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useWishlist } from "@/lib/hooks/usewishlist";
 import { useUser } from "@/lib/hooks/useUser";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUserViewingRequests } from "@/lib/hooks/useViewingRequests"; // Import the hook to get viewing requests
 
 interface HeaderProps {
@@ -29,6 +29,7 @@ export default function Header({ userType = "user" }: HeaderProps) {
   const { wishlist } = useWishlist();
   const { user, isLoading, isAuthenticated } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
 
   // Use the useUserViewingRequests hook to get viewing requests
   const { data: userViewingRequests, loading: loadingViewingRequests } =
@@ -121,35 +122,51 @@ export default function Header({ userType = "user" }: HeaderProps) {
           <Image
             src="/logowhite.png"
             alt="NestedHub Logo"
-            width={560} // Increased width
-            height={180} // Increased height
-            className="w-auto h-12 object-contain" // Adjusted height for image
+            width={560}
+            height={180}
+            className="w-auto h-16 object-contain" 
           />
         </Link>
 
         {/* Navigation - Desktop */}
-        <nav className="hidden md:flex items-center space-x-10 text-lg font-medium">
+        <nav className="hidden md:flex items-center space-x-10 text-base font-medium">
           <Link
             href="/user"
-            className="hover:text-green-200 transition-colors duration-200"
+            className={`transition-colors duration-200 py-1 border-b-2 ${
+              pathname === "/user"
+                ? "text-green-200 border-green-200 font-bold"
+                : "border-transparent hover:text-green-200 hover:border-green-200"
+            }`}
           >
             Home
           </Link>
           <Link
             href="/user/rent"
-            className="hover:text-green-200 transition-colors duration-200"
+            className={`transition-colors duration-200 py-1 border-b-2 ${
+              pathname === "/user/rent"
+                ? "text-green-200 border-green-200 font-bold"
+                : "border-transparent hover:text-green-200 hover:border-green-200"
+            }`}
           >
             Rent
           </Link>
           <Link
             href="/user/about"
-            className="hover:text-green-200 transition-colors duration-200"
+            className={`transition-colors duration-200 py-1 border-b-2 ${
+              pathname === "/user/about"
+                ? "text-green-200 border-green-200 font-bold"
+                : "border-transparent hover:text-green-200 hover:border-green-200"
+            }`}
           >
             About Us
           </Link>
           <Link
             href="/user/faq"
-            className="hover:text-green-200 transition-colors duration-200"
+            className={`transition-colors duration-200 py-1 border-b-2 ${
+              pathname === "/user/faq"
+                ? "text-green-200 border-green-200 font-bold"
+                : "border-transparent hover:text-green-200 hover:border-green-200"
+            }`}
           >
             FAQ
           </Link>
@@ -214,9 +231,9 @@ export default function Header({ userType = "user" }: HeaderProps) {
 
           {/* User Profile / Sign In */}
           {isLoading ? (
-            <div className="flex items-center space-x-2 bg-white rounded-full p-1.5 pr-3 shadow-sm">
+            <div className="flex items-center space-x-2 bg-white rounded-full p-2 pr-4 shadow-sm">
               <Loader2 className="h-5 w-5 text-green-800 animate-spin" />
-              <span className="text-green-800 text-sm font-medium hidden sm:inline">
+              <span className="text-green-800 text-base font-medium hidden sm:inline">
                 Loading...
               </span>
             </div>
@@ -225,13 +242,13 @@ export default function Header({ userType = "user" }: HeaderProps) {
               href="/user/profile/me"
               className="flex items-center space-x-2 group p-1 pr-3 rounded-full hover:bg-green-600 transition-colors duration-200"
             >
-              <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white group-hover:border-green-200 transition-colors duration-200 flex items-center justify-center flex-shrink-0">
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-white group-hover:border-green-200 transition-colors duration-200 flex items-center justify-center flex-shrink-0">
                 {hasValidProfilePictureUrl ? (
                   <Image
                     src={user.profile_picture_url as string}
                     alt={user.name || "User profile picture"}
                     fill
-                    sizes="32px"
+                    sizes="36px"
                     className="object-cover"
                   />
                 ) : (
@@ -240,17 +257,17 @@ export default function Header({ userType = "user" }: HeaderProps) {
                   </div>
                 )}
               </div>
-              <span className="hidden sm:inline text-sm font-medium group-hover:text-green-200 transition-colors duration-200">
+              <span className="hidden sm:inline text-base font-medium group-hover:text-green-200 transition-colors duration-200">
                 {user.name || "User"}
               </span>
             </Link>
           ) : (
             <Link
               href="/login"
-              className="flex items-center space-x-1 bg-white text-green-800 py-1.5 px-3 rounded-full hover:bg-green-100 transition-colors duration-200 shadow-sm"
+              className="flex items-center space-x-2 bg-white text-green-800 py-2 px-5 rounded-full hover:bg-green-100 transition-colors duration-200 shadow-sm"
             >
               <User className="h-5 w-5" />
-              <span className="hidden sm:inline text-sm font-medium">
+              <span className="hidden sm:inline text-base font-medium">
                 Sign In
               </span>
             </Link>

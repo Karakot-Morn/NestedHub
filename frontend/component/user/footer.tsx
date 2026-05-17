@@ -7,7 +7,7 @@ interface FooterProps {
 
 export default function Footer({ userType = "user" }: FooterProps) {
   return (
-    <footer className="bg-white py-12 border-t">
+    <footer className="bg-white pt-12 pb-20 border-t">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Title Row - No bottom border */}
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10">

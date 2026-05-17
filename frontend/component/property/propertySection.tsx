@@ -81,7 +81,7 @@ export default function PropertySection({ // <--- ONLY ONE export default here
         </div>
       )}
 
-      <div className="mt-16 flex justify-center">
+      <div className="mt-16 mb-12 flex justify-center">
         <div className="w-24 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full"></div>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { Search, MapPin, Building2, ArrowUpDown } from "lucide-react";
+import { Search, MapPin, Building2, ArrowUpDown, ChevronDown } from "lucide-react";
 import React from "react";
 
 interface Filters {
@@ -52,11 +52,14 @@ const LocationDropdown = ({
       onClick={() => toggleDropdown("location")}
       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-10"
     >
-      <div className="flex items-center h-full">
-        <MapPin className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
-        <span className="text-gray-700 truncate">
-          {getSelectedLocationText() || "Select Location"}
-        </span>
+      <div className="flex items-center justify-between h-full w-full">
+        <div className="flex items-center overflow-hidden">
+          <MapPin className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
+          <span className="text-gray-700 truncate">
+            {getSelectedLocationText() || "Select Location"}
+          </span>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-gray-400 ml-2 flex-shrink-0 transition-transform ${dropdownStates.location ? "rotate-180" : ""}`} />
       </div>
     </button>
 
@@ -66,7 +69,11 @@ const LocationDropdown = ({
           <select
             value={filters.city_id}
             onChange={(e) => handleFilterChange("city_id", e.target.value)}
-            className="w-full p-2 border border-gray-200 rounded text-sm"
+            className={`w-full p-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
+              filters.city_id 
+                ? "bg-green-50 text-green-700 border-green-200 font-medium" 
+                : "border-gray-200 text-gray-700 hover:border-gray-300"
+            }`}
           >
             <option value="">Select City/Province</option>
             {cities.map((city: { id: number | string; name: string }) => (
@@ -80,7 +87,11 @@ const LocationDropdown = ({
             <select
               value={filters.district_id}
               onChange={(e) => handleFilterChange("district_id", e.target.value)}
-              className="w-full p-2 border border-gray-200 rounded text-sm"
+              className={`w-full p-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                filters.district_id 
+                  ? "bg-green-50 text-green-700 border-green-200 font-medium" 
+                  : "border-gray-200 text-gray-700 hover:border-gray-300"
+              }`}
             >
               <option value="">Select District</option>
               {districts.map((district: { id: number | string; name: string }) => (
@@ -95,7 +106,11 @@ const LocationDropdown = ({
             <select
               value={filters.commune_id}
               onChange={(e) => handleFilterChange("commune_id", e.target.value)}
-              className="w-full p-2 border border-gray-200 rounded text-sm"
+              className={`w-full p-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                filters.commune_id 
+                  ? "bg-green-50 text-green-700 border-green-200 font-medium" 
+                  : "border-gray-200 text-gray-700 hover:border-gray-300"
+              }`}
             >
               <option value="">Select Commune</option>
               {communes.map((commune: { id: number | string; name: string }) => (
@@ -126,29 +141,49 @@ const PropertyCategoryDropdown = ({
       onClick={() => toggleDropdown("propertyCategory")}
       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-10"
     >
-      <div className="flex items-center h-full">
-        <Building2 className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
-        <span className="text-gray-700 truncate">
-          {getSelectedPropertyCategoryText() || "Property Type"}
-        </span>
+      <div className="flex items-center justify-between h-full w-full">
+        <div className="flex items-center overflow-hidden">
+          <Building2 className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
+          <span className="text-gray-700 truncate">
+            {getSelectedPropertyCategoryText() || "Property Type"}
+          </span>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-gray-400 ml-2 flex-shrink-0 transition-transform ${dropdownStates.propertyCategory ? "rotate-180" : ""}`} />
       </div>
     </button>
 
     {dropdownStates.propertyCategory && (
-      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-        <div className="p-2">
-          <select
-            value={filters.category_id}
-            onChange={(e) => handleFilterChange("category_id", e.target.value)}
-            className="w-full p-2 border border-gray-200 rounded text-sm"
+      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg overflow-hidden">
+        <div className="p-1 max-h-60 overflow-y-auto">
+          <button
+            type="button"
+            onClick={() => {
+              handleFilterChange("category_id", "");
+              toggleDropdown("propertyCategory");
+            }}
+            className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+              !filters.category_id ? "bg-green-50 text-green-700 font-medium" : "text-gray-700 hover:bg-gray-100"
+            }`}
           >
-            <option value="">All Property Types</option>
-            {propertyCategories.map((category: { id: number | string; name: string }) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            All Property Types
+          </button>
+          {propertyCategories.map((category: { id: number | string; name: string }) => (
+            <button
+              key={category.id}
+              type="button"
+              onClick={() => {
+                handleFilterChange("category_id", category.id.toString());
+                toggleDropdown("propertyCategory");
+              }}
+              className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                filters.category_id === category.id.toString()
+                  ? "bg-green-50 text-green-700 font-medium"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
         </div>
       </div>
     )}
@@ -161,6 +196,7 @@ const SortDropdown = ({
   toggleDropdown,
   handleSortChange,
   getSelectedSortText,
+  filters,
 }: any) => (
   <div className="relative">
     <button
@@ -168,43 +204,74 @@ const SortDropdown = ({
       onClick={() => toggleDropdown("priceSort")}
       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-10"
     >
-      <div className="flex items-center h-full">
-        <ArrowUpDown className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
-        <span className="text-gray-700 truncate">
-          {getSelectedSortText() || "Sort By"}
-        </span>
+      <div className="flex items-center justify-between h-full w-full">
+        <div className="flex items-center overflow-hidden">
+          <ArrowUpDown className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
+          <span className="text-gray-700 truncate">
+            {getSelectedSortText() || "Sort By"}
+          </span>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-gray-400 ml-2 flex-shrink-0 transition-transform ${dropdownStates.priceSort ? "rotate-180" : ""}`} />
       </div>
     </button>
 
     {dropdownStates.priceSort && (
       <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
         <div className="p-2">
-          <div className="space-y-1">
+          <div className="p-1 space-y-1 max-h-60 overflow-y-auto">
             <button
               type="button"
-              onClick={() => handleSortChange("rent_price", "asc")}
-              className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm"
+              onClick={() => {
+                handleSortChange("rent_price", "asc");
+                toggleDropdown("priceSort");
+              }}
+              className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                filters.sort_by === "rent_price" && filters.sort_order === "asc"
+                  ? "bg-green-50 text-green-700 font-medium"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
             >
               Price: Low to High
             </button>
             <button
               type="button"
-              onClick={() => handleSortChange("rent_price", "desc")}
-              className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm"
+              onClick={() => {
+                handleSortChange("rent_price", "desc");
+                toggleDropdown("priceSort");
+              }}
+              className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                filters.sort_by === "rent_price" && filters.sort_order === "desc"
+                  ? "bg-green-50 text-green-700 font-medium"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
             >
               Price: High to Low
             </button>
             <button
               type="button"
-              onClick={() => handleSortChange("listed_at", "desc")}
-              className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm"
+              onClick={() => {
+                handleSortChange("listed_at", "desc");
+                toggleDropdown("priceSort");
+              }}
+              className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                filters.sort_by === "listed_at" && filters.sort_order === "desc"
+                  ? "bg-green-50 text-green-700 font-medium"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
             >
               Newest First
             </button>
             <button
               type="button"
-              onClick={() => handleSortChange("listed_at", "asc")}
-              className="w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm"
+              onClick={() => {
+                handleSortChange("listed_at", "asc");
+                toggleDropdown("priceSort");
+              }}
+              className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                filters.sort_by === "listed_at" && filters.sort_order === "asc"
+                  ? "bg-green-50 text-green-700 font-medium"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
             >
               Oldest First
             </button>
@@ -240,8 +307,8 @@ export default function FilterSection({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+        <div className="md:col-span-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Search
           </label>
@@ -258,7 +325,7 @@ export default function FilterSection({
           </div>
         </div>
 
-        <div className="md:col-span-1">
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Location
           </label>
@@ -274,7 +341,7 @@ export default function FilterSection({
           />
         </div>
 
-        <div className="md:col-span-1">
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Category
           </label>
@@ -288,7 +355,7 @@ export default function FilterSection({
           />
         </div>
 
-        <div className="md:col-span-1">
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Sort
           </label>
@@ -297,10 +364,11 @@ export default function FilterSection({
             toggleDropdown={toggleDropdown}
             handleSortChange={handleSortChange}
             getSelectedSortText={getSelectedSortText}
+            filters={filters}
           />
         </div>
 
-        <div className="md:col-span-1">
+        <div className="md:col-span-2">
           <button
             type="button"
             onClick={handleSearchSubmit}

@@ -242,13 +242,13 @@ const CardContent = (
           </span>
         </div>
 
-        <div className="flex items-center justify-between text-gray-600 text-sm border-t border-gray-100 pt-3 mt-auto">
-          <div className="flex items-center">
-            <Bed className="h-4 w-4 mr-1.5 text-gray-400" />
+        <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-auto">
+          <div className="flex items-center text-gray-600 font-medium text-sm">
+            <Bed className="h-4 w-4 mr-1.5 text-gray-500" />
             <span>{property.bedrooms} Beds</span>
           </div>
-          <div className="flex items-center">
-            <Bath className="h-4 w-4 mr-1.5 text-gray-400" />
+          <div className="flex items-center text-gray-600 font-medium text-sm">
+            <Bath className="h-4 w-4 mr-1.5 text-gray-500" />
             <span>{property.bathrooms} Baths</span>
           </div>
         </div>

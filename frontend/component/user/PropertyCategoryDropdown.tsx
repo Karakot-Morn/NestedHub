@@ -58,7 +58,7 @@ export default function PropertyCategoryDropdown({
                 !filters.category_id ? "bg-green-50 text-green-700" : ""
               }`}
             >
-              All Categories
+              All Property Types
             </button>
             {propertyCategories.map((category) => (
               <button

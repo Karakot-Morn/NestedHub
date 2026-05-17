@@ -12,7 +12,7 @@ export default function HeroSection() {
             <br />
             property today.
           </h1>
-          <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
+          <p className="text-lg lg:text-xl text-gray-700 font-medium leading-relaxed max-w-lg">
             Discover amazing properties in prime locations with our comprehensive search and filtering system.
           </p>
         </div>

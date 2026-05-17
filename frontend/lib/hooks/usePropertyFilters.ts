@@ -137,10 +137,15 @@ export function usePropertyFilters() {
     fetch(API_PROPERTY_CATEGORIES)
       .then((res) => res.json())
       .then((data) => {
-        const formatted = data.map((item: { category_id: number; category_name: string }) => ({
-          id: item.category_id,
-          name: item.category_name,
-        }))
+        const formatted = data
+          .filter((item: { category_id: number; category_name: string }) => 
+            item.category_name.toLowerCase() !== "all categories" && 
+            item.category_name.toLowerCase() !== "all property types"
+          )
+          .map((item: { category_id: number; category_name: string }) => ({
+            id: item.category_id,
+            name: item.category_name,
+          }))
         console.log("usePropertyFilters: Fetched property categories:", formatted)
         setPropertyCategories(formatted)
       })
@@ -280,7 +285,7 @@ export function usePropertyFilters() {
       const category = propertyCategories.find((c) => c.id.toString() === filters.category_id)
       return category?.name
     }
-    return "All Categories"
+    return "All Property Types"
   }, [filters.category_id, propertyCategories])
 
   const getSelectedSortText = useCallback(() => {
