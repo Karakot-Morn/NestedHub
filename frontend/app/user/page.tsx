@@ -84,37 +84,6 @@ export default function UserHomePage() {
     });
   };
 
-  // Define propertyCategories and its type
-  type PropertyCategory = { id: number | string; name: string };
-  const [propertyCategories, setPropertyCategories] = useState<PropertyCategory[]>([]);
-
-  useEffect(() => {
-    // Replace this with your actual API call
-    setPropertyCategories([
-      { id: 1, name: "House" },
-      { id: 2, name: "Apartment" },
-      { id: 3, name: "Room" },
-    ]);
-  }, []);
-
-  const getCategoryIdByName = (name: string) => {
-    const category = propertyCategories.find((cat: PropertyCategory) => cat.name.toLowerCase() === name.toLowerCase());
-    if (!propertyCategories || propertyCategories.length === 0) {
-      return undefined;
-    }
-    return category?.id ? String(category.id) : undefined;
-  };
-
-  const memoizedCategoryIds = useMemo(() => {
-    return {
-      houseId: getCategoryIdByName("house"),
-      apartmentId: getCategoryIdByName("apartment"),
-      roomId: getCategoryIdByName("room"),
-    };
-  }, [propertyCategories]);
-
-  const { houseId, apartmentId, roomId } = memoizedCategoryIds;
-
   // Use the property filters hook to get filters, searchQuery, and related handlers
   const {
     filters,
@@ -131,7 +100,26 @@ export default function UserHomePage() {
     cities,
     districts,
     communes,
+    propertyCategories,
   } = usePropertyFilters();
+
+  const getCategoryIdByName = (name: string) => {
+    const category = propertyCategories.find((cat: { id: number | string; name: string }) => cat.name.toLowerCase() === name.toLowerCase());
+    if (!propertyCategories || propertyCategories.length === 0) {
+      return undefined;
+    }
+    return category?.id ? String(category.id) : undefined;
+  };
+
+  const memoizedCategoryIds = useMemo(() => {
+    return {
+      houseId: getCategoryIdByName("house"),
+      apartmentId: getCategoryIdByName("apartment"),
+      roomId: getCategoryIdByName("room"),
+    };
+  }, [propertyCategories]);
+
+  const { houseId, apartmentId, roomId } = memoizedCategoryIds;
 
   // Memoize filters to prevent infinite re-renders
   const newListingsFilters = useMemo(() => ({ sort_by: "listed_at", sort_order: "desc" }), []);
