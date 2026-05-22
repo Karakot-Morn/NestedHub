@@ -358,17 +358,19 @@ def init_db(session: Session) -> None:
     session.flush()  # Assign property IDs
 
     # Initialize Property Locations
-    phnom_penh = session.exec(select(City).where(City.city_id == 21)).first()
+    phnom_penh = session.exec(select(City).where(City.city_name == "Phnom Penh")).first()
+    db_districts = session.exec(select(District).where(District.city_id == phnom_penh.city_id)).all()
+    
     for property in properties:
-        district = random.choice(districts)
-        district_id = district["district_id"]
-        commune = random.choice(communes_by_district.get(
-            district_id, communes_by_district[58]))
+        db_district = random.choice(db_districts)
+        db_communes = session.exec(select(Commune).where(Commune.district_id == db_district.district_id)).all()
+        db_commune = random.choice(db_communes) if db_communes else None
+        
         location = PropertyLocation(
             property_id=property.property_id,
             city_id=phnom_penh.city_id,
-            district_id=district_id,
-            commune_id=commune["commune_id"],
+            district_id=db_district.district_id,
+            commune_id=db_commune.commune_id if db_commune else None,
             street_number=f"Street {random.randint(1, 200)}",
             latitude=Decimal(str(round(random.uniform(11.5, 11.6), 6))),
             longitude=Decimal(str(round(random.uniform(104.8, 104.95), 6))),
