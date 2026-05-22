@@ -18,7 +18,7 @@ api_router.include_router(admin_router, tags=["Admin"])
 
 from app.initial_data import init
 
-@api_router.get("/initdb")
+@api_router.get("/initdb", tags=["Init"])
 def init_database():
     try:
         init()
