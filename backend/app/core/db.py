@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 # 🔒 Synchronous engine
 sync_engine = create_engine(
     str(settings.SQLALCHEMY_DATABASE_URI),
-    echo=True  # Optional: set to False in production
+    echo=True,  # Optional: set to False in production
+    pool_pre_ping=True,
+    pool_recycle=300
 )
 
 # ⚡ Asynchronous engine
@@ -27,7 +29,9 @@ async_engine = create_async_engine(
     str(settings.SQLALCHEMY_DATABASE_URI).replace(
         "postgresql://", "postgresql+asyncpg://"
     ),
-    echo=True  # Optional: set to False in production
+    echo=True,  # Optional: set to False in production
+    pool_pre_ping=True,
+    pool_recycle=300
 )
 
 # 🔒 Synchronous session factory
