@@ -10,11 +10,13 @@ export interface Filters {
   sort_order: string
 }
 
+import { API_BASE_URL } from "../utils/api"
+
 // === API ENDPOINTS ===
-const API_CITIES = "http://localhost:8000/api/properties/filters/cities"
-const API_DISTRICTS = (cityId: string) => `http://localhost:8000/api/properties/filters/districts?city_id=${cityId}`
-const API_COMMUNES = (districtId: string) => `http://localhost:8000/api/properties/filters/communes?district_id=${districtId}`
-const API_PROPERTY_CATEGORIES = "http://localhost:8000/api/properties/filters/categories"
+const API_CITIES = `${API_BASE_URL}/api/properties/filters/cities`
+const API_DISTRICTS = (cityId: string) => `${API_BASE_URL}/api/properties/filters/districts?city_id=${cityId}`
+const API_COMMUNES = (districtId: string) => `${API_BASE_URL}/api/properties/filters/communes?district_id=${districtId}`
+const API_PROPERTY_CATEGORIES = `${API_BASE_URL}/api/properties/filters/categories`
 
 const SORT_OPTIONS = [
   { value: "listed_at", order: "desc", label: "Latest Listed" },
