@@ -10,7 +10,7 @@ export interface Filters {
   sort_order: string
 }
 
-import { API_BASE_URL } from "../utils/api"
+import { API_BASE_URL } from "../api/config"
 
 // === API ENDPOINTS ===
 const API_CITIES = `${API_BASE_URL}/api/properties/filters/cities`
