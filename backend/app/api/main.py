@@ -16,4 +16,12 @@ api_router.include_router(review_router, tags=["Reviews"])
 api_router.include_router(viewing_router, tags=["Viewing Requests"])
 api_router.include_router(admin_router, tags=["Admin"])
 
+from app.initial_data import init
 
+@api_router.get("/initdb")
+def init_database():
+    try:
+        init()
+        return {"message": "Database successfully populated with test users and 50 properties!"}
+    except Exception as e:
+        return {"error": str(e)}
