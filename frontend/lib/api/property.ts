@@ -1,5 +1,6 @@
 import { getAuthHeaders } from './auth';
 import { Property } from '@/lib/types';
+export type { Property } from '@/lib/types';
 
 export interface PropertySearchParams {
   keyword?: string;
@@ -22,6 +23,11 @@ export interface PropertyUpdateParams {
     bathrooms?: number;
     floor_area?: number;
     status?: 'pending' | 'available' | 'rented' | 'hidden';
+    pricing?: {
+      rent_price?: number;
+      available_from?: string | null;
+    };
+    [key: string]: any;
 }
 
 export interface PropertyCountResponse {
@@ -32,6 +38,54 @@ export interface PropertyCountResponse {
 }
 
 import { API_BASE_URL } from './config';
+
+function mapProperty(p: any): Property {
+  if (!p) return p;
+  return {
+    property_id: p.property_id,
+    title: p.title || "",
+    description: p.description || "",
+    bedrooms: p.bedrooms || 0,
+    bathrooms: p.bathrooms || 0,
+    land_area: p.land_area ? Number(p.land_area) : 0,
+    floor_area: p.floor_area ? Number(p.floor_area) : 0,
+    status: p.status || "",
+    updated_at: p.updated_at || "",
+    listed_at: p.listed_at || "",
+    owner_id: p.user_id || 0,
+    category_name: p.category_name,
+    rent_price: p.pricing ? Number(p.pricing.rent_price) : 0,
+    city: p.location ? (p.location.city_name || "") : "",
+    address: p.location ? `${p.location.street_number || ""}, ${p.location.commune_name || ""}, ${p.location.district_name || ""}, ${p.location.city_name || ""}`.replace(/^,\s*|,\s*$/, '').trim() : "",
+    category: {
+      category_id: 0,
+      category_name: p.category_name || "",
+    },
+    pricing: p.pricing ? {
+      rent_price: Number(p.pricing.rent_price),
+      available_from: p.pricing.available_from || "",
+    } : { rent_price: 0, available_from: "" },
+    location: p.location ? {
+      location_id: p.location.location_id || 0,
+      street_number: p.location.street_number || "",
+      latitude: p.location.latitude || 0,
+      longitude: p.location.longitude || 0,
+      city: { city_id: p.location.city_id || 0, city_name: p.location.city_name || "" },
+      district: { district_id: p.location.district_id || 0, district_name: p.location.district_name || "" },
+      commune: { commune_id: p.location.commune_id || 0, commune_name: p.location.commune_name || "" },
+    } : {
+      location_id: 0,
+      street_number: "",
+      latitude: 0,
+      longitude: 0,
+      city: { city_id: 0, city_name: "" },
+      district: { district_id: 0, district_name: "" },
+      commune: { commune_id: 0, commune_name: "" },
+    },
+    media: p.media || [],
+    features: p.features || [],
+  };
+}
 
 export const propertyApi = {
   // Search for properties
@@ -55,11 +109,15 @@ export const propertyApi = {
       throw new Error('Failed to search properties');
     }
 
-    return response.json();
+    const data = await response.json();
+    return {
+      items: (data.properties || []).map(mapProperty),
+      total: data.total || 0
+    };
   },
 
   // Get a single property by ID
-  getProperty: async (propertyId: string): Promise<Property> => {
+  getProperty: async (propertyId: string | number): Promise<Property> => {
     const response = await fetch(
       `${API_BASE_URL}/api/properties/${propertyId}`,
       {
@@ -72,11 +130,12 @@ export const propertyApi = {
       throw new Error('Failed to fetch property');
     }
 
-    return response.json();
+    const data = await response.json();
+    return mapProperty(data);
   },
 
   // Update a property
-  updateProperty: async (propertyId: string, data: PropertyUpdateParams): Promise<Property> => {
+  updateProperty: async (propertyId: string | number, data: PropertyUpdateParams): Promise<Property> => {
     const response = await fetch(
       `${API_BASE_URL}/api/properties/${propertyId}`,
       {
@@ -92,10 +151,17 @@ export const propertyApi = {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ detail: 'Failed to update property' }));
-      throw new Error(errorData.detail);
+      let errorMessage = 'Failed to update property';
+      if (typeof errorData.detail === 'string') {
+        errorMessage = errorData.detail;
+      } else if (Array.isArray(errorData.detail)) {
+        errorMessage = errorData.detail.map((err: any) => `${err.loc[err.loc.length - 1] || 'field'}: ${err.msg}`).join(', ');
+      }
+      throw new Error(errorMessage);
     }
 
-    return response.json();
+    const resData = await response.json();
+    return mapProperty(resData);
   },
 
   // Get property counts
@@ -116,7 +182,7 @@ export const propertyApi = {
   },
 
   // Delete a property
-  deleteProperty: async (propertyId: string): Promise<void> => {
+  deleteProperty: async (propertyId: string | number): Promise<void> => {
     const response = await fetch(
       `${API_BASE_URL}/api/properties/${propertyId}`,
       {
@@ -162,9 +228,16 @@ export const propertyApi = {
     );
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ detail: 'Failed to create property' }));
-      throw new Error(errorData.detail);
+      let errorMessage = 'Failed to create property';
+      if (typeof errorData.detail === 'string') {
+        errorMessage = errorData.detail;
+      } else if (Array.isArray(errorData.detail)) {
+        errorMessage = errorData.detail.map((err: any) => `${err.loc[err.loc.length - 1] || 'field'}: ${err.msg}`).join(', ');
+      }
+      throw new Error(errorMessage);
     }
-    return response.json();
+    const resData = await response.json();
+    return mapProperty(resData);
   },
 
   getOwnerListings: async (searchTerm?: string): Promise<{ properties: any[] }> => {

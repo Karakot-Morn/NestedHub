@@ -13,7 +13,7 @@ interface SidebarProps {
 
 const AdminSidebar = memo(function AdminSidebar({ children }: SidebarProps) {
   const pathname = usePathname()
-  const { user, logout } = useAuthContext() // <-- CORRECTED HOOK CALL, also added logout for later
+  const { user } = useAuthContext()
   const [userManagementOpen, setUserManagementOpen] = useState(false)
   const [propertyListingOpen, setPropertyListingOpen] = useState(false)
 
@@ -26,18 +26,6 @@ const AdminSidebar = memo(function AdminSidebar({ children }: SidebarProps) {
     if (isUserManagementActive) setUserManagementOpen(true)
     if (isPropertyListingActive) setPropertyListingOpen(true)
   }, [isUserManagementActive, isPropertyListingActive])
-
-  // Handle logout action
-  const handleLogout = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default link behavior
-    try {
-      await logout(); // Call the logout function from useAuthContext
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Optionally show a user-friendly error message
-    }
-    // The useAuthContext hook already handles redirection to /login
-  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -157,14 +145,13 @@ const AdminSidebar = memo(function AdminSidebar({ children }: SidebarProps) {
 
             {/* Logout */}
             <li>
-              <a
-                href="/admin/login" // Keep href for accessibility/fallback
-                onClick={handleLogout} // Call the new handler
+              <Link
+                href="/admin/logout"
                 className="flex items-center p-2 rounded-md hover:bg-gray-100 text-gray-700"
               >
                 <LogOut className="w-5 h-5 mr-3" />
                 Logout
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>

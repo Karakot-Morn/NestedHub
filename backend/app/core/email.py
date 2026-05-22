@@ -9,25 +9,25 @@ def send_email(
     body: str
 ) -> None:
     try:
-        msg = MIMEText(body)
+        msg = MIMEText(body, "html")
         msg['Subject'] = subject
-        msg['From'] = settings.EMAILS_FROM_EMAIL
+        msg['From'] = f"NestedHub <{settings.EMAILS_FROM_EMAIL}>"
         msg['To'] = recipient
 
         # Check environment before deciding how to send the email
         with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
-            if settings.ENVIRONMENT == "local":
+            if settings.SMTP_HOST == "mailcatcher" or (settings.ENVIRONMENT == "local" and not settings.SMTP_USER):
                 # No authentication required for MailCatcher in local environment
-                print("Using MailCatcher for local environment")
+                print("Using MailCatcher or unauthenticated SMTP server")
             else:
-                # In production or staging, use authentication if credentials are provided
+                # Use authentication if credentials are provided
                 if settings.SMTP_TLS:
                     server.starttls()
 
                 if settings.SMTP_USER and settings.SMTP_PASSWORD:
                     server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
                     
-                print("Using SMTP server for production/staging")
+                print(f"Using SMTP server: {settings.SMTP_HOST}")
 
             server.send_message(msg)
     except Exception as e:

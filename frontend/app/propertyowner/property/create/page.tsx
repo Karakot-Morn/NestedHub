@@ -14,6 +14,7 @@ import { toast } from "react-hot-toast";
 import Sidebar from "@/component/dashoboadpropertyowner/sidebar";
 import { propertyApi } from "@/lib/api/property";
 import { propertyOwnerApi } from "@/lib/api/propertyOwner";
+import { API_BASE_URL } from "@/lib/api/config";
 
 // --- Helper to fetch dynamic data ---
 const fetchFilters = async (url: string) => {
@@ -98,13 +99,13 @@ export default function CreatePropertyPage() {
       try {
         const [categoriesData, featuresData, citiesData] = await Promise.all([
           fetchFilters(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/categories`
+            `${API_BASE_URL}/api/properties/filters/categories`
           ),
           fetchFilters(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/features`
+            `${API_BASE_URL}/api/properties/filters/features`
           ),
           fetchFilters(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/cities`
+            `${API_BASE_URL}/api/properties/filters/cities`
           ),
         ]);
         setCategories(categoriesData);
@@ -131,7 +132,7 @@ export default function CreatePropertyPage() {
     if (!formData.city_id) return;
     const loadDistricts = async () => {
       const districtsData = await fetchFilters(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/districts?city_id=${formData.city_id}`
+        `${API_BASE_URL}/api/properties/filters/districts?city_id=${formData.city_id}`
       );
       setDistricts(districtsData);
       setFormData((prev) => ({
@@ -146,7 +147,7 @@ export default function CreatePropertyPage() {
     if (!formData.district_id) return;
     const loadCommunes = async () => {
       const communesData = await fetchFilters(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/communes?district_id=${formData.district_id}`
+        `${API_BASE_URL}/api/properties/filters/communes?district_id=${formData.district_id}`
       );
       setCommunes(communesData);
       setFormData((prev) => ({
@@ -174,6 +175,8 @@ export default function CreatePropertyPage() {
           "land_area",
           "floor_area",
           "rent_price",
+          "latitude",
+          "longitude",
         ].includes(name)
           ? Number(value)
           : value,
@@ -190,29 +193,22 @@ export default function CreatePropertyPage() {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Temporarily disabled
-    toast.error("Image upload is temporarily disabled.");
-    return;
-    /*
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
     
     setIsUploading(true);
-    toast.loading("Uploading images...");
+    const toastId = toast.loading("Uploading images...");
     try {
       const uploadPromises = Array.from(files).map(file => propertyOwnerApi.uploadImageToCloudinary(file));
       const results = await Promise.all(uploadPromises);
       const newMedia = results.map(result => ({ media_url: result.secure_url, media_type: 'image' }));
       setFormData(prev => ({ ...prev, media: [...prev.media, ...newMedia] }));
-      toast.dismiss();
-      toast.success("Images uploaded successfully!");
+      toast.success("Images uploaded successfully!", { id: toastId });
     } catch (error) {
-      toast.dismiss();
-      toast.error("Image upload failed.");
+      toast.error("Image upload failed.", { id: toastId });
     } finally {
       setIsUploading(false);
     }
-    */
   };
 
   const handleFinalSubmit = async () => {
@@ -363,10 +359,11 @@ export default function CreatePropertyPage() {
                 </label>
                 <select
                   name="city_id"
-                  value={formData.city_id}
+                  value={formData.city_id || ""}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-white text-gray-800"
                 >
+                  <option value="" disabled>Select City/Province</option>
                   {cities.map((c) => (
                     <option key={c.city_id} value={c.city_id}>
                       {c.city_name}
@@ -380,10 +377,11 @@ export default function CreatePropertyPage() {
                 </label>
                 <select
                   name="district_id"
-                  value={formData.district_id}
+                  value={formData.district_id || ""}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-white text-gray-800"
                 >
+                  <option value="" disabled>Select District/Khan</option>
                   {districts.map((d) => (
                     <option key={d.district_id} value={d.district_id}>
                       {d.district_name}
@@ -397,10 +395,11 @@ export default function CreatePropertyPage() {
                 </label>
                 <select
                   name="commune_id"
-                  value={formData.commune_id}
+                  value={formData.commune_id || ""}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-white text-gray-800"
                 >
+                  <option value="" disabled>Select Commune/Sangkat</option>
                   {communes.map((c) => (
                     <option key={c.commune_id} value={c.commune_id}>
                       {c.commune_name}
@@ -651,7 +650,7 @@ export default function CreatePropertyPage() {
               }
               className="flex items-center px-6 py-2 bg-green-800 text-white rounded"
             >
-              <ArrowRight className="h-5 w-5 ml-2" /> Next
+              Next <ArrowRight className="h-5 w-5 ml-2" />
             </button>
           ) : (
             <button

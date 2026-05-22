@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import { useWishlist } from "@/lib/hooks/useWishlist";
+import { useWishlist } from "@/lib/hooks/usewishlist";
 
 // Create context
 export const WishlistContext = createContext<

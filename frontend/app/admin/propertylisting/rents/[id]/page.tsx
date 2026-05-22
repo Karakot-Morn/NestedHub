@@ -71,7 +71,7 @@ export default function RentalPropertyDetailPage() {
             </div>
             <div>
               <div className="font-medium mb-2">Category</div>
-              <div>{property.category}</div>
+              <div>{property.category_name || 'N/A'}</div>
             </div>
             <div>
               <div className="font-medium mb-2">Bedrooms</div>
@@ -83,11 +83,11 @@ export default function RentalPropertyDetailPage() {
             </div>
             <div>
               <div className="font-medium mb-2">Address</div>
-              <div>{property.address}</div>
+              <div>{property.address || 'N/A'}</div>
             </div>
             <div>
               <div className="font-medium mb-2">City</div>
-              <div>{property.city}</div>
+              <div>{property.city || 'N/A'}</div>
             </div>
             <div>
               <div className="font-medium mb-2">Status</div>
@@ -95,7 +95,7 @@ export default function RentalPropertyDetailPage() {
             </div>
             <div>
               <div className="font-medium mb-2">Created At</div>
-              <div>{new Date(property.created_at).toLocaleDateString()}</div>
+              <div>{new Date(property.listed_at || property.updated_at).toLocaleDateString()}</div>
             </div>
             <div>
               <div className="font-medium mb-2">Owner ID</div>

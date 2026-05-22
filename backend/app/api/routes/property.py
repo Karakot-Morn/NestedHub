@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import Optional, List
 from fastapi import Query
+from app.models.enums import PropertyStatusEnum
 import logging
 from app.api.deps import get_db_session, get_current_user, require_owner_or_admin, require_admin
 from app.crud.crud_property import (
@@ -217,6 +218,8 @@ def search_properties_handler(
         None, description="Filter by commune ID"),
     category_id: Optional[int] = Query(
         None, description="Filter by category ID"),
+    status: Optional[PropertyStatusEnum] = Query(
+        None, description="Filter by property status"),
     sort_by: Optional[str] = Query(
         None, description="Field to sort by (e.g., rent_price, bedrooms, floor_area, listed_at)"),
     sort_order: Optional[str] = Query(
@@ -226,8 +229,8 @@ def search_properties_handler(
     session: Session = Depends(get_db_session)
 ):
     logger.debug(
-        "Searching properties with keyword=%s, sort_by=%s, sort_order=%s, session=%s",
-        keyword, sort_by, sort_order, session)
+        "Searching properties with keyword=%s, status=%s, sort_by=%s, sort_order=%s, session=%s",
+        keyword, status, sort_by, sort_order, session)
     return search_properties(
         session=session,
         keyword=keyword,
@@ -235,6 +238,7 @@ def search_properties_handler(
         district_id=district_id,
         commune_id=commune_id,
         category_id=category_id,
+        status=status,
         sort_by=sort_by,
         sort_order=sort_order,
         offset=offset,

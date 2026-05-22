@@ -3,38 +3,32 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import AdminSidebar from "@/component/admin/sidebar";
-import { adminApi } from "@/lib/api/admin";
 import { toast } from "react-hot-toast";
+import AdminSidebar from "@/component/admin/sidebar";
+import { useAuthContext } from "@/lib/context/AuthContext";
 
 export default function AdminLogoutPage() {
   const router = useRouter();
+  const { logout } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCancel = () => {
-    router.push("/admin/dashboard");
+    router.back(); // Go back to the previous page
   };
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        await adminApi.logout(token);
-      }
-    } catch (error) {
-      // Even if backend logout fails, proceed with client-side logout
-      console.error("Logout failed", error);
-    } finally {
-      // Clear all user-related data from storage
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-      
-      toast.success("Logged out successfully");
+    toast.loading("Logging out...");
 
-      // Redirect to login page
+    try {
+      await logout();
+      toast.dismiss();
+      toast.success("You have been logged out.");
       router.push("/login");
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Logout failed. Please try again.");
+      setIsLoading(false);
     }
   };
 
@@ -50,15 +44,15 @@ export default function AdminLogoutPage() {
           />
         </div>
 
-        <h1 className="text-2xl font-bold mb-6">Log Out</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Log Out</h1>
 
-        <p className="text-lg mb-8">Are you sure you want to log out?</p>
+        <p className="text-lg mb-8 text-gray-600">Are you sure you want to log out?</p>
 
         <div className="flex space-x-4">
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
           >
             Cancel
           </button>
@@ -66,7 +60,7 @@ export default function AdminLogoutPage() {
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="bg-green-800 hover:bg-green-700 text-white py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            className="bg-[#b8c75b] hover:bg-[#a3b148] text-white py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
           >
             {isLoading ? "Logging out..." : "Confirm"}
           </button>
@@ -75,5 +69,3 @@ export default function AdminLogoutPage() {
     </AdminSidebar>
   );
 }
-
-

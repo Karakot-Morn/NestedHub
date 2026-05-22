@@ -43,10 +43,16 @@ function useFetch<T>(
       const result = await fetcher();
       setData(result);
     } catch (err: any) {
-      if (err.message !== "Authentication required: No token found.") {
+      if (
+        err.message !== "Authentication required: No token found." &&
+        !err.message.includes("Forbidden") &&
+        !err.message.includes("Unauthorized")
+      ) {
         console.error("Error during fetch:", err);
+        setError(err);
+      } else {
+        setError(null);
       }
-      setError(err);
     } finally {
       setLoading(false);
     }

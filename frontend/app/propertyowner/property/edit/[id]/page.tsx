@@ -5,8 +5,9 @@ import { useRouter, useParams } from "next/navigation";
 import { Loader2, UploadCloud, CheckCircle, ArrowLeft, ArrowRight, Save } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Sidebar from "@/component/dashoboadpropertyowner/sidebar";
-import { propertyApi } from '@/lib/api/property';
+import { propertyApi, type PropertyUpdateParams } from '@/lib/api/property';
 import { propertyOwnerApi } from '@/lib/api/propertyOwner';
+import { API_BASE_URL } from '@/lib/api/config';
 import { Property, PropertyFeature, PropertyCategory } from "@/lib/types";
 
 // --- Helper to fetch dynamic data ---
@@ -66,46 +67,66 @@ export default function EditPropertyPage() {
 
     const loadData = async () => {
       try {
+        // The API returns a flat structure (ApiProperty shape), not the nested Property type
         const [propertyData, categoriesData, featuresData, citiesData] = await Promise.all([
           propertyApi.getProperty(propertyId),
-          fetchFilters(`${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/categories`),
-          fetchFilters(`${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/features`),
-          fetchFilters(`${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/cities`),
+          fetchFilters(`${API_BASE_URL}/api/properties/filters/categories`),
+          fetchFilters(`${API_BASE_URL}/api/properties/filters/features`),
+          fetchFilters(`${API_BASE_URL}/api/properties/filters/cities`),
         ]);
 
-        // Populate form with existing data
+        // The API returns: category_name (string), location.city_id (number), location.district_id (number), etc.
+        // NOT: category.category_id, location.city.city_id — those are the internal Property type shape
+        const apiProperty = propertyData as any; // use 'any' to safely access the real flat API fields
+
+        // Look up category_id from the categories list using the category_name returned by API
+        const matchedCategory = categoriesData.find(
+          (c: { category_id: number; category_name: string }) =>
+            c.category_name === apiProperty.category_name
+        );
+
+        // Safely parse available_from — it can be null
+        let available_from = '';
+        if (apiProperty.pricing?.available_from) {
+          try {
+            available_from = new Date(apiProperty.pricing.available_from).toISOString().split('T')[0];
+          } catch { available_from = ''; }
+        }
+
         setFormData({
-            title: propertyData.title,
-            description: propertyData.description,
-            bedrooms: propertyData.bedrooms,
-            bathrooms: propertyData.bathrooms,
-            land_area: propertyData.land_area,
-            floor_area: propertyData.floor_area,
-            status: propertyData.status,
-            category_id: propertyData.category.category_id,
-            feature_ids: propertyData.features.map(f => f.feature_id),
-            rent_price: propertyData.pricing.rent_price,
-            available_from: new Date(propertyData.pricing.available_from).toISOString().split('T')[0],
-            street_number: propertyData.location.street_number,
-            latitude: propertyData.location.latitude,
-            longitude: propertyData.location.longitude,
-            city_id: propertyData.location.city.city_id,
-            district_id: propertyData.location.district.district_id,
-            commune_id: propertyData.location.commune.commune_id,
-            media: propertyData.media,
+          title: apiProperty.title || '',
+          description: apiProperty.description || '',
+          bedrooms: apiProperty.bedrooms ?? 0,
+          bathrooms: apiProperty.bathrooms ?? 0,
+          land_area: Number(apiProperty.land_area) || 0,
+          floor_area: Number(apiProperty.floor_area) || 0,
+          status: apiProperty.status || 'available',
+          category_id: matchedCategory?.category_id,
+          feature_ids: (apiProperty.features || []).map((f: any) => f.feature_id),
+          rent_price: Number(apiProperty.pricing?.rent_price) || 0,
+          available_from,
+          street_number: apiProperty.location?.street_number || '',
+          latitude: Number(apiProperty.location?.latitude) || 0,
+          longitude: Number(apiProperty.location?.longitude) || 0,
+          // Flat IDs from the API response (not nested objects)
+          city_id: apiProperty.location?.city_id,
+          district_id: apiProperty.location?.district_id,
+          commune_id: apiProperty.location?.commune_id,
+          media: (apiProperty.media || []),
         });
-        
+
         // Populate filter dropdowns
         setCategories(categoriesData);
         setFeatures(featuresData);
         setCities(citiesData);
+        setIsLoading(false); // Form data is ready — show the form
 
       } catch (error) {
         toast.error("Failed to load property data. Redirecting...");
         router.push("/propertyowner/property");
       }
     };
-    
+
     loadData();
   }, [propertyId, router]);
 
@@ -113,7 +134,7 @@ export default function EditPropertyPage() {
   useEffect(() => {
     if (!formData?.city_id) return;
     const loadDistricts = async () => {
-      const districtsData = await fetchFilters(`${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/districts?city_id=${formData.city_id}`);
+      const districtsData = await fetchFilters(`${API_BASE_URL}/api/properties/filters/districts?city_id=${formData.city_id}`);
       setDistricts(districtsData);
     };
     loadDistricts();
@@ -122,9 +143,8 @@ export default function EditPropertyPage() {
   useEffect(() => {
     if (!formData?.district_id) return;
     const loadCommunes = async () => {
-      const communesData = await fetchFilters(`${process.env.NEXT_PUBLIC_API_URL}/api/properties/filters/communes?district_id=${formData.district_id}`);
+      const communesData = await fetchFilters(`${API_BASE_URL}/api/properties/filters/communes?district_id=${formData.district_id}`);
       setCommunes(communesData);
-      setIsLoading(false); // Stop loading once all data is present
     };
     loadCommunes();
   }, [formData?.district_id]);
@@ -151,17 +171,15 @@ export default function EditPropertyPage() {
     if (!files || !formData) return;
     
     setIsUploading(true);
-    toast.loading("Uploading images...");
+    const toastId = toast.loading("Uploading images...");
     try {
       const uploadPromises = Array.from(files).map(file => propertyOwnerApi.uploadImageToCloudinary(file));
       const results = await Promise.all(uploadPromises);
       const newMedia = results.map(result => ({ media_url: result.secure_url, media_type: 'image' }));
       setFormData(prev => ({ ...prev!, media: [...prev!.media, ...newMedia] }));
-      toast.dismiss();
-      toast.success("Images uploaded successfully!");
+      toast.success("Images uploaded successfully!", { id: toastId });
     } catch (error) {
-      toast.dismiss();
-      toast.error("Image upload failed.");
+      toast.error("Image upload failed.", { id: toastId });
     } finally {
       setIsUploading(false);
     }
@@ -172,28 +190,49 @@ export default function EditPropertyPage() {
         toast.error("Please ensure all location and category fields are selected.");
         return;
     }
-    
+
     setIsSubmitting(true);
-    toast.loading("Updating property...");
+    const toastId = toast.loading("Updating property...");
     try {
-      const { city_id, district_id, commune_id, street_number, latitude, longitude, ...restOfData } = formData;
-      const payload = {
-          ...restOfData,
-          location: { city_id, district_id, commune_id, street_number, latitude, longitude },
-          pricing: { rent_price: formData.rent_price, available_from: formData.available_from || null }
+      // Destructure ALL fields that belong to nested objects so they don't
+      // pollute the top-level payload (backend PropertyUpdate has no top-level rent_price etc.)
+      const {
+        city_id, district_id, commune_id, street_number, latitude, longitude,  // → location
+        rent_price, available_from,                                             // → pricing
+        media,                                                                  // → media list
+        ...coreFields                                                           // title, description, bedrooms, etc.
+      } = formData;
+
+      const payload: PropertyUpdateParams = {
+        ...coreFields,
+        status: coreFields.status as 'pending' | 'available' | 'rented' | 'hidden',
+        location: {
+          city_id,
+          district_id,
+          commune_id,
+          street_number: street_number || null,
+          latitude,
+          longitude,
+        },
+        pricing: {
+          rent_price,
+          available_from: available_from || null,
+        },
+        media: media.map(m => ({ media_url: m.media_url, media_type: m.media_type })),
       };
-      
+
       await propertyApi.updateProperty(propertyId, payload);
-      toast.dismiss();
+      toast.dismiss(toastId);
       toast.success("Property updated successfully!");
-      router.push(`/propertyowner/property/${propertyId}`);
+      router.push(`/propertyowner/property`);
     } catch (error: any) {
-      toast.dismiss();
+      toast.dismiss(toastId);
       toast.error(error.message || "Failed to update property.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const renderStepContent = () => {
     if (!formData) return null;
@@ -217,9 +256,9 @@ export default function EditPropertyPage() {
                 <div className="space-y-4">
                      <h2 className="text-xl font-semibold">Location</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label>City/Province</label><select name="city_id" value={formData.city_id} onChange={handleChange} className="w-full p-2 border rounded">{cities.map(c => <option key={c.city_id} value={c.city_id}>{c.city_name}</option>)}</select></div>
-                        <div><label>District/Khan</label><select name="district_id" value={formData.district_id} onChange={handleChange} className="w-full p-2 border rounded">{districts.map(d => <option key={d.district_id} value={d.district_id}>{d.district_name}</option>)}</select></div>
-                        <div><label>Commune/Sangkat</label><select name="commune_id" value={formData.commune_id} onChange={handleChange} className="w-full p-2 border rounded">{communes.map(c => <option key={c.commune_id} value={c.commune_id}>{c.commune_name}</option>)}</select></div>
+                        <div><label>City/Province</label><select name="city_id" value={formData.city_id || ""} onChange={handleChange} className="w-full p-2 border rounded bg-white text-gray-800"><option value="" disabled>Select City/Province</option>{cities.map(c => <option key={c.city_id} value={c.city_id}>{c.city_name}</option>)}</select></div>
+                        <div><label>District/Khan</label><select name="district_id" value={formData.district_id || ""} onChange={handleChange} className="w-full p-2 border rounded bg-white text-gray-800"><option value="" disabled>Select District/Khan</option>{districts.map(d => <option key={d.district_id} value={d.district_id}>{d.district_name}</option>)}</select></div>
+                        <div><label>Commune/Sangkat</label><select name="commune_id" value={formData.commune_id || ""} onChange={handleChange} className="w-full p-2 border rounded bg-white text-gray-800"><option value="" disabled>Select Commune/Sangkat</option>{communes.map(c => <option key={c.commune_id} value={c.commune_id}>{c.commune_name}</option>)}</select></div>
                         <div><label>Street Number</label><input name="street_number" value={formData.street_number} onChange={handleChange} className="w-full p-2 border rounded" /></div>
                         <div><label>Latitude</label><input name="latitude" type="number" step="any" value={formData.latitude} onChange={handleChange} className="w-full p-2 border rounded" /></div>
                         <div><label>Longitude</label><input name="longitude" type="number" step="any" value={formData.longitude} onChange={handleChange} className="w-full p-2 border rounded" /></div>
@@ -304,7 +343,7 @@ export default function EditPropertyPage() {
         <div className="flex justify-between mt-8">
             <button onClick={() => setCurrentStep(s => Math.max(0, s-1))} disabled={currentStep === 0} className="flex items-center px-6 py-2 border rounded disabled:opacity-50"><ArrowLeft className="h-5 w-5 mr-2"/> Back</button>
             {currentStep < steps.length - 1 ? (
-                <button onClick={() => setCurrentStep(s => Math.min(steps.length - 1, s+1))} className="flex items-center px-6 py-2 bg-green-800 text-white rounded"><ArrowRight className="h-5 w-5 ml-2"/> Next</button>
+                <button onClick={() => setCurrentStep(s => Math.min(steps.length - 1, s+1))} className="flex items-center px-6 py-2 bg-green-800 text-white rounded">Next <ArrowRight className="h-5 w-5 ml-2"/></button>
             ) : (
                 <button onClick={handleFinalSubmit} disabled={isSubmitting} className="flex items-center px-6 py-2 bg-green-800 text-white rounded disabled:bg-gray-400">
                     {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mr-2"/> : <Save className="h-5 w-5 mr-2"/>}

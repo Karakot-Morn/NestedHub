@@ -83,25 +83,59 @@ def _validate_unique_user(session: Session, email: str, phone: Optional[str], oa
     except ValidationError:
         raise HTTPException(status_code=400, detail="Invalid email format")
 
-    query_conditions = [User.email == email]
+    # Check email first
+    existing_user_email = session.exec(
+        select(User).where(User.email == email)
+    ).first()
 
-    if oauth_uid is not None:
-        query_conditions.append(User.oauth_uid == oauth_uid)
-
-    if phone is not None:
-        query_conditions.append(User.phone == phone)
-
-    existing_user = session.exec(
-        select(User).where(or_(*query_conditions))).first()
-
-    if existing_user:
-        if existing_user.email == email:
+    if existing_user_email:
+        if not existing_user_email.is_email_verified:
+            # Delete unverified user and their codes
+            session.delete(existing_user_email)
+            codes = session.exec(
+                select(VerificationCodeDB).where(VerificationCodeDB.email == existing_user_email.email)
+            ).all()
+            for code in codes:
+                session.delete(code)
+            session.commit()
+        else:
             raise HTTPException(status_code=400, detail="Email already in use")
-        if phone is not None and existing_user.phone == phone:
-            raise HTTPException(status_code=400, detail="Phone already in use")
-        if oauth_uid is not None and existing_user.oauth_uid == oauth_uid:
-            raise HTTPException(
-                status_code=400, detail="OAuth ID already in use")
+
+    # Check phone if provided
+    if phone is not None:
+        existing_user_phone = session.exec(
+            select(User).where(User.phone == phone)
+        ).first()
+        if existing_user_phone:
+            if not existing_user_phone.is_email_verified:
+                # Delete unverified user and their codes
+                session.delete(existing_user_phone)
+                codes = session.exec(
+                    select(VerificationCodeDB).where(VerificationCodeDB.email == existing_user_phone.email)
+                ).all()
+                for code in codes:
+                    session.delete(code)
+                session.commit()
+            else:
+                raise HTTPException(status_code=400, detail="Phone already in use")
+
+    # Check oauth_uid if provided
+    if oauth_uid is not None:
+        existing_user_oauth = session.exec(
+            select(User).where(User.oauth_uid == oauth_uid)
+        ).first()
+        if existing_user_oauth:
+            if not existing_user_oauth.is_email_verified:
+                # Delete unverified user and their codes
+                session.delete(existing_user_oauth)
+                codes = session.exec(
+                    select(VerificationCodeDB).where(VerificationCodeDB.email == existing_user_oauth.email)
+                ).all()
+                for code in codes:
+                    session.delete(code)
+                session.commit()
+            else:
+                raise HTTPException(status_code=400, detail="OAuth ID already in use")
 
 
 def _create_user_in_db(
@@ -549,10 +583,16 @@ def request_password_reset(*, session: Session, email: str) -> None:
                 body=f"Your password reset code is: {code}\nValid for 10 minutes."
             )
         except HTTPException as e:
-            session.rollback()
-            session.delete(verification)
-            session.commit()
-            raise e
+            if settings.ENVIRONMENT == "local":
+                print("\n" + "="*80)
+                print(f"WARNING: Failed to send password reset email to {email}: {e.detail}")
+                print(f"PASSWORD RESET CODE FOR {email} IS: {code}")
+                print("="*80 + "\n")
+            else:
+                session.rollback()
+                session.delete(verification)
+                session.commit()
+                raise e
     except IntegrityError:
         session.rollback()
         raise HTTPException(

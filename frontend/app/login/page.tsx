@@ -126,47 +126,46 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex font-['Inter']">
+    <div className="min-h-screen flex font-sans">
       {/* Left Side - Green Section */}
-      <div className="flex-1 bg-[#20511e] relative flex flex-col justify-between p-8 lg:p-12 rounded-r-2xl shadow-xl">
+      <div className="flex-1 bg-[#20511e] relative flex flex-col p-8 lg:p-12 rounded-r-2xl shadow-xl overflow-hidden">
         {/* Logo */}
-        <div className="flex items-center gap-3 text-white mb-12">
+        <div className="flex items-center gap-2 text-white mb-16 relative z-10">
           <img
             src="/logowhite.png"
             alt="NestHub Logo"
-            className="w-16 h-16 object-contain"
+            className="w-12 h-12 object-contain"
           />
-          <span className="text-3xl font-bold tracking-wide">NESTHUB</span>
+          <span className="text-2xl font-bold tracking-wide mt-1">NESTHUB</span>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col justify-center">
-          <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-8">
+        <div className="relative z-10 mb-32">
+          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight mb-6 drop-shadow-md max-w-md">
             Welcome back to your perfect property search.
           </h1>
-          <p className="text-white text-lg opacity-90">
+          <p className="text-white text-base lg:text-lg opacity-90 drop-shadow-md max-w-sm">
             Log in to continue exploring homes and managing your listings.
           </p>
         </div>
 
-        {/* House Image - Adjusted to take full width and be at the bottom */}
-        {/* Added 'absolute', 'bottom-0', 'left-0', 'right-0' and removed 'mt-12' and 'max-w-md' from inner div */}
-        <div className="absolute bottom-0 left-0 right-0 flex justify-center">
-          <div className="w-full">
-            {" "}
-            {/* This div now ensures the image container takes full width */}
+        {/* House Image */}
+        <div className="mt-auto -mx-8 lg:-mx-12 -mb-8 lg:-mb-12 relative flex justify-center">
+          <div className="w-full relative">
             <img
               src="/modern-residential.png"
               alt="Modern house"
-              className="w-full h-auto object-cover rounded-bl-2xl rounded-br-2xl lg:rounded-bl-none lg:rounded-br-none" // Use object-cover and adjust corner rounding
+              className="w-full h-auto object-cover rounded-bl-2xl lg:rounded-br-none"
             />
+            {/* Soft ground shadow to blend with the container edge */}
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent rounded-bl-2xl lg:rounded-br-none mix-blend-multiply"></div>
           </div>
         </div>
       </div>
 
       {/* Right Side - Form Section (Styled like registration pages) */}
       <div className="flex-1 bg-white flex items-center justify-center p-8 rounded-l-2xl shadow-xl">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-md space-y-6">
           {/* Header */}
           <div className="text-center space-y-3">
             <h2 className="text-3xl font-extrabold text-gray-900">
@@ -194,49 +193,57 @@ export default function LoginPage() {
             )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="relative">
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                required
-                className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={isLoading}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  placeholder="Email address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="relative">
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isLoading}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+              
+              <div className="flex justify-end pt-1">
+                <Link href="/auth/forgot-password" className="text-sm text-[#20511e] hover:underline font-medium">
+                  Forgot Password?
+                </Link>
+              </div>
             </div>
 
             <button
@@ -292,7 +299,7 @@ export default function LoginPage() {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className={`w-full h-12 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm disabled:cursor-not-allowed disabled:opacity-70`}
+            className={`w-full h-12 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm disabled:cursor-not-allowed disabled:opacity-70 font-sans font-medium`}
           >
             {isLoading ? (
               <>
@@ -344,7 +351,7 @@ export default function LoginPage() {
             )}
           </button>
         {/* Footer Links - Added Register button/link */}
-        <div className="text-center space-y-2 pt-4">
+        <div className="text-center space-y-2 pt-4 pb-8">
           <p className="text-gray-600 text-base">
             Don't have an account?{" "}
             <Link

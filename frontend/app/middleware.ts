@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/admin/login', '/', '/favicon.ico'];
+  const publicRoutes = ['/login', '/', '/favicon.ico'];
   
   // Assets and API routes should be ignored
   const ignoredRoutes = ['/api', '/_next', '/static', '/images'];
@@ -35,16 +35,12 @@ export function middleware(request: NextRequest) {
 
   // If user is not authenticated and trying to access a protected route
   if (!isAuthenticated && !isPublicRoute) {
-    // Redirect admin routes to admin login, others to main login
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // If user is authenticated but trying to access login pages
   if (isAuthenticated) {
-    if (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/admin/login') {
+    if (request.nextUrl.pathname === '/login') {
       // Redirect based on user role
       let redirectUrl = '/';
       
@@ -66,7 +62,7 @@ export function middleware(request: NextRequest) {
   // Protect admin routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!isAuthenticated || userRole !== 'admin') {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 

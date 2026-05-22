@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
     if (!authLoading) {
       // Ensure auth state has been determined
       if (!isAuthenticated || user?.role !== "admin") {
-        router.replace("/admin/login");
+        router.replace("/login");
         return; // Prevent fetching if user is not authorized
       }
       fetchStats();

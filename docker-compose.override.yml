@@ -83,10 +83,10 @@ services:
     volumes:
       - ./backend/htmlcov:/app/htmlcov
     environment:
-      SMTP_HOST: "mailcatcher"
-      SMTP_PORT: "1025"
-      SMTP_TLS: "false"
-      EMAILS_FROM_EMAIL: "noreply@example.com"
+      # SMTP_HOST: "mailcatcher"
+      # SMTP_PORT: "1025"
+      # SMTP_TLS: "false"
+      # EMAILS_FROM_EMAIL: "noreply@example.com"
       BACKEND_CORS_ORIGINS: '["http://localhost:3000"]'
 
   # frontend:

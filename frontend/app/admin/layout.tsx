@@ -16,19 +16,11 @@ export default function AdminLayout({
   useEffect(() => {
     if (!loading) { // Ensure authentication state has been determined
       if (!isAuthenticated || !user || user.role !== 'admin') {
-        // Don't redirect if already on the login page
-        if (pathname !== '/admin/login') {
-          router.replace('/admin/login');
-        }
+        router.replace('/login');
         return;
       }
-
-      // If authenticated and on login page, redirect to dashboard
-      if (pathname === '/admin/login' && isAuthenticated && user.role === 'admin') {
-        router.replace('/admin/dashboard');
-      }
     }
-  }, [isAuthenticated, user, loading, router, pathname]);
+  }, [isAuthenticated, user, loading, router]);
 
   // Show loading state while checking authorization
   if (loading) {
@@ -39,8 +31,8 @@ export default function AdminLayout({
     );
   }
 
-  // If not authenticated or not admin, and NOT on the login page, return null to prevent content flicker
-  if ((!isAuthenticated || !user || user.role !== 'admin') && pathname !== '/admin/login') {
+  // If not authenticated or not admin, return null to prevent content flicker while redirecting
+  if (!isAuthenticated || !user || user.role !== 'admin') {
     return null;
   }
 

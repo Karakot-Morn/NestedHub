@@ -41,9 +41,13 @@ const HomeIcon = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
-type CustomerRegistrationFormData = Omit<UserCreate, 'id_card_url' | 'profile_picture_url' | 'role'> & {
+type CustomerRegistrationFormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
   profilePictureFile: File | null;
-  // idCardFile is specifically NOT included here as it's for property owners only
 };
 
 export default function CustomerRegisterPage() {
@@ -51,7 +55,8 @@ export default function CustomerRegisterPage() {
   const { register } = useAuthContext();
 
   const [formData, setFormData] = useState<CustomerRegistrationFormData>({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     password: "",
@@ -93,7 +98,7 @@ export default function CustomerRegisterPage() {
       }
 
       const userCreateData: UserCreate = {
-        name: formData.name,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
         email: formData.email,
         phone: formData.phone || undefined, // Make phone optional
         role: 'customer', // Hardcode role for this page
@@ -119,47 +124,51 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex font-['Inter']">
+    <div className="min-h-screen flex font-sans">
       {/* Left Side - Green Section */}
-      <div className="flex-1 bg-[#20511e] relative flex flex-col justify-between p-8 lg:p-12 rounded-r-2xl shadow-xl">
+      <div className="flex-1 bg-[#20511e] relative flex flex-col p-8 lg:p-12 rounded-r-2xl shadow-xl overflow-hidden">
         {/* Logo */}
-        <div className="flex items-center gap-3 text-white mb-12">
+        <div className="flex items-center gap-2 text-white mb-16 relative z-10">
           <img
             src="/logowhite.png"
             alt="NestHub Logo"
-            className="w-16 h-16 object-contain"
+            className="w-12 h-12 object-contain"
           />
-          <span className="text-3xl font-bold tracking-wide">NESTHUB</span>
+          <span className="text-2xl font-bold tracking-wide mt-1">NESTHUB</span>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col justify-center">
-          <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-8">
+        <div className="relative z-10 mb-32">
+          <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight mb-6 drop-shadow-md max-w-md">
             Let us help you find the perfect property today.
           </h1>
-          <p className="text-white text-lg opacity-90">
+          <p className="text-white text-base lg:text-lg opacity-90 drop-shadow-md max-w-sm">
             Connecting you to your dream home with ease and confidence.
           </p>
         </div>
 
-        {/* House Image (Using actual image from public folder) */}
-        <div className="flex justify-center mt-12">
-          <div className="relative w-full max-w-md">
+        {/* House Image */}
+        <div className="mt-auto -mx-8 lg:-mx-12 -mb-8 lg:-mb-12 relative flex justify-center">
+          <div className="w-full relative">
             <img
               src="/modern-residential.png"
               alt="Modern house"
-              className="w-full h-auto object-contain rounded-lg shadow-lg"
+              className="w-full h-auto object-cover rounded-bl-2xl lg:rounded-br-none"
             />
+            {/* Soft ground shadow to blend with the container edge */}
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent rounded-bl-2xl lg:rounded-br-none mix-blend-multiply"></div>
           </div>
         </div>
       </div>
 
       {/* Right Side - Form Section */}
-      <div className="flex-1 bg-white flex items-center justify-center p-8 rounded-l-2xl shadow-xl">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 bg-white flex items-center justify-center p-8 lg:py-12 rounded-l-2xl shadow-xl relative overflow-hidden">
+        {/* Subtle Right Panel Header Gradient */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#20511e]/5 to-transparent pointer-events-none"></div>
+        <div className="w-full max-w-md space-y-6 relative z-10">
           {/* Header */}
           <div className="text-center space-y-3">
-            <h2 className="text-3xl font-extrabold text-gray-900">Create Your Customer Account</h2>
+            <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-900 leading-tight">Create Your Customer Account</h2>
             <p className="text-gray-600 text-base">
               By continuing, you agree to NestHub's <a href="#" className="text-[#20511e] hover:underline font-medium">Terms of Use</a>.
             </p>
@@ -178,84 +187,119 @@ export default function CustomerRegisterPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                required
-                className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
-                value={formData.name}
-                onChange={handleChange}
-                disabled={loading}
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  required
+                  className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  required
+                  className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
 
-            <div>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                autoComplete="email"
-                required
-                className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={loading}
-              />
-            </div>
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  autoComplete="email"
+                  required
+                  className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
 
-            <div>
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone Number (Optional)"
-                className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
-                value={formData.phone || ""}
-                onChange={handleChange}
-                disabled={loading}
-              />
-            </div>
+              <div>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone Number (Optional)"
+                  className="w-full h-12 px-4 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  value={formData.phone || ""}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
 
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                autoComplete="new-password"
-                required
-                className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={loading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={loading}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            </div>
+              <div className="relative mb-2">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  autoComplete="new-password"
+                  required
+                  className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder:text-gray-500 focus:border-[#20511e] focus:ring-2 focus:ring-[#20511e] focus:outline-none transition-all duration-200"
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={loading}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+                {/* Password Strength Meter */}
+                {formData.password && (
+                  <div className="absolute -bottom-5 left-0 flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <div className={`h-1.5 w-8 rounded-full ${formData.password.length > 0 ? (formData.password.length < 6 ? 'bg-red-500' : 'bg-[#20511e]') : 'bg-gray-200'}`}></div>
+                      <div className={`h-1.5 w-8 rounded-full ${formData.password.length > 5 ? (formData.password.match(/[0-9]/) || formData.password.match(/[^a-zA-Z0-9]/) ? 'bg-[#20511e]' : 'bg-yellow-400') : 'bg-gray-200'}`}></div>
+                      <div className={`h-1.5 w-8 rounded-full ${formData.password.length > 8 && formData.password.match(/[0-9]/) && formData.password.match(/[^a-zA-Z0-9]/) ? 'bg-[#20511e]' : 'bg-gray-200'}`}></div>
+                    </div>
+                    <span className="text-[10px] text-gray-500 font-medium">
+                      {formData.password.length < 6 ? 'Weak' : formData.password.length > 8 && formData.password.match(/[0-9]/) && formData.password.match(/[^a-zA-Z0-9]/) ? 'Strong' : 'Medium'}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-            {/* Profile Picture Upload */}
-            <div>
-              <label htmlFor="profilePictureFile" className="block text-sm font-medium text-gray-700 mb-2">Profile Picture (Optional)</label>
-              <input
-                id="profilePictureFile"
-                name="profilePictureFile"
-                type="file"
-                accept="image/*"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 focus:outline-none"
-                onChange={handleFileChange}
-                disabled={loading}
-              />
-              {formData.profilePictureFile && (
-                <p className="mt-2 text-xs text-gray-500">Selected: {formData.profilePictureFile.name}</p>
-              )}
+              {/* Profile Picture Upload */}
+              <div className="pt-2">
+                <label htmlFor="profilePictureFile" className="block text-sm font-medium text-gray-700 mb-2">Profile Picture (Optional)</label>
+                <div className="flex items-center justify-center w-full">
+                  <label htmlFor="profilePictureFile" className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-6 h-6 mb-2 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                      </svg>
+                      <p className="mb-1 text-sm text-gray-500"><span className="font-semibold text-[#20511e]">Click to upload</span></p>
+                    </div>
+                    <input
+                      id="profilePictureFile"
+                      name="profilePictureFile"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      disabled={loading}
+                    />
+                  </label>
+                </div>
+                {formData.profilePictureFile && (
+                  <p className="mt-2 text-xs text-[#20511e] font-medium text-center">Selected: {formData.profilePictureFile.name}</p>
+                )}
+              </div>
             </div>
 
             <button
@@ -295,6 +339,12 @@ export default function CustomerRegisterPage() {
                 "Create Account"
               )}
             </button>
+            <div className="flex items-center justify-center gap-2 pt-1 text-sm text-gray-500 font-medium">
+              <svg className="w-4 h-4 text-[#20511e]" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>SSL Secured &bull; Your data is safe</span>
+            </div>
           </form>
 
           {/* Divider */}
@@ -307,7 +357,7 @@ export default function CustomerRegisterPage() {
           {/* Google Button */}
           <button
             type="button"
-            className="w-full h-12 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full h-12 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm disabled:cursor-not-allowed disabled:opacity-70 font-sans font-medium"
             disabled={loading}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -332,7 +382,7 @@ export default function CustomerRegisterPage() {
           </button>
 
           {/* Footer Links */}
-          <div className="text-center space-y-2 pt-4">
+          <div className="text-center space-y-2 pt-4 pb-8">
             <p className="text-gray-600 text-base">
               Already have an account?{" "}
               <Link href="/login" className="text-[#20511e] hover:underline font-semibold">
@@ -340,7 +390,7 @@ export default function CustomerRegisterPage() {
               </Link>
             </p>
             <div className="pt-2">
-              <Link href="/register/property-owner" className="text-gray-600 hover:text-[#20511e] font-medium">
+              <Link href="/auth/register/property-owner" className="text-gray-600 hover:text-[#20511e] font-medium transition-colors">
                 Register as a Property Owner <span aria-hidden="true">&rarr;</span>
               </Link>
             </div>

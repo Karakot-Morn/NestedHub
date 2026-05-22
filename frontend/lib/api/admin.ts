@@ -143,7 +143,17 @@ export const adminApi = {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to approve property owner');
+      let errorMsg = 'Failed to approve property owner';
+      try {
+        const errorData = await response.json();
+        if (errorData && errorData.detail) {
+          errorMsg += ': ' + JSON.stringify(errorData.detail);
+        }
+      } catch (e) {
+        // ignore
+      }
+      console.error('approvePropertyOwner error:', errorMsg);
+      throw new Error(errorMsg);
     }
 
     return response.json();

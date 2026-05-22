@@ -58,14 +58,13 @@ export function useWishlist(): UseWishlistResult {
       console.log("useWishlist: Successfully received wishlist data:", data); // Log 8
       setWishlist(data ?? []);
     } catch (err: any) {
-      console.error("useWishlist: Failed to fetch wishlist in fetchWishlistData (catch block). Error object:", err); // Log 9
-      console.error("useWishlist: Error message:", err.message); // Log 10 (Important for "API base URL...")
-
-      if (err.message.includes("Authentication required") || err.message.includes("Unauthorized")) {
-        console.log("useWishlist: Caught authentication-related error. Setting error to null and clearing wishlist."); // Log 11
-        setError(null); // Don't show an error if it's just due to being logged out
-        setWishlist([]); // Clear wishlist if session expired
+      if (err.message.includes("Authentication required") || err.message.includes("Unauthorized") || err.message.includes("Forbidden")) {
+        console.log("useWishlist: Caught authentication/permission error. Setting error to null and clearing wishlist."); // Log 11
+        setError(null); // Don't show an error if it's just due to being logged out or forbidden
+        setWishlist([]); // Clear wishlist if session expired or not authorized
       } else {
+        console.error("useWishlist: Failed to fetch wishlist in fetchWishlistData (catch block). Error object:", err); // Log 9
+        console.error("useWishlist: Error message:", err.message); // Log 10
         console.log("useWishlist: Caught generic API error. Setting error state."); // Log 12
         setError(err.message || "An unknown error occurred while fetching wishlist.");
         setWishlist([]);

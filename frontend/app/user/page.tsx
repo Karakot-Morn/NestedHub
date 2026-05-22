@@ -42,8 +42,10 @@ export default function UserHomePage() {
             // Ensure wishlist property_ids are numbers for consistency
             setUserWishlist(wishlist.map(item => ({...item, property_id: Number(item.property_id)})));
           }
-        } catch (error) {
-          console.error("Failed to fetch user wishlist:", error);
+        } catch (error: any) {
+          if (!error?.message?.includes("Forbidden") && !error?.message?.includes("Unauthorized")) {
+            console.error("Failed to fetch user wishlist:", error);
+          }
         } finally {
           setLoadingWishlist(false);
         }

@@ -1,39 +1,11 @@
-// import SignUpForm from "@/component/sighupform";
-// import Image from "next/image";
+"use client";
 
-// export default function SignUpPage() {
-//   return (
-//     <main className="flex min-h-screen">
-//       <div className="hidden md:flex md:w-1/2 bg-green-800 text-white p-8 flex-col relative">
-//         <div className="mb-2">
-//           <Image
-//             src="/logowhite.png"
-//             alt="NestedHub Logo"
-//             width={200}
-//             height={40}
-//           />
-//         </div>
-//         <div className="max-w-md">
-//           <h1 className="text-4xl font-bold mb-4">
-//             Let us help you find the perfect property today.
-//           </h1>
-//           <div className="mt-8">
-//             <Image
-//               src="/house.jpg"
-//               alt="Modern Property"
-//               width={500}
-//               height={300}
-//               className="rounded-md"
-//               priority
-//             />
-//           </div>
-//         </div>
-//       </div>
-//       <div className="w-full md:w-1/2 flex items-center justify-center p-8">
-//         <SignUpForm />
-//       </div>
-//     </main>
-//   );
-// }
+import React from "react";
 
-
+export default function SignUpPage() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <h1 className="text-xl">Sign Up Page Placeholder</h1>
+    </div>
+  );
+}

@@ -56,12 +56,17 @@ export async function fetchAuthenticated<T>(
       `[fetchAuthenticated] Response status for ${fullUrl}: ${response.status}`
     );
 
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       console.error(
         "[fetchAuthenticated] Authentication failed or token expired. Clearing tokens."
       );
       clearTokens();
       throw new Error("Unauthorized: Token invalid or expired."); // Re-throw to propagate error for UI
+    }
+
+    if (response.status === 403) {
+      console.warn("[fetchAuthenticated] 403 Forbidden. Returning null to avoid UI crashes.");
+      return null;
     }
 
     if (method === "DELETE" && response.status === 404) {

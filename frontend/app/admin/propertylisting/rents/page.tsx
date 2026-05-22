@@ -32,7 +32,6 @@ export default function RentalPropertiesPage() {
     try {
       setIsLoading(true);
       const response = await propertyApi.searchProperties({
-        status: 'rented',
         keyword: debouncedSearchTerm || undefined,
         offset: (currentPage - 1) * ITEMS_PER_PAGE,
         limit: ITEMS_PER_PAGE,
@@ -166,15 +165,23 @@ export default function RentalPropertiesPage() {
                       {property.title}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {property.category}
+                      {property.category_name || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        property.status === 'available'
+                          ? 'bg-green-100 text-green-800'
+                          : property.status === 'rented'
+                          ? 'bg-blue-100 text-blue-800'
+                          : property.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
                         {property.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(property.created_at).toLocaleDateString()}
+                      {new Date(property.listed_at || property.updated_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">

@@ -135,6 +135,10 @@ export interface Property {
   listed_at: string;
   owner_id: number;
   category: PropertyCategory;
+  category_name?: string;
+  rent_price?: number;
+  address?: string;
+  city?: string;
   pricing: {
     rent_price: number;
     available_from: string;

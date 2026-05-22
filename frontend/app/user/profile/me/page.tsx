@@ -165,7 +165,7 @@ export default function UserProfilePage() {
     setImageUploadSuccess(null);
     setIsUploadingImage(true);
 
-    const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'df2xavvu7';
     // IMPORTANT: Replace 'your_unsigned_upload_preset' with the actual name of your unsigned upload preset
     const UPLOAD_PRESET = 'property_sphere_upload'; // <<-- CONFIRM THIS MATCHES YOUR CLOUDINARY UNSIGNED UPLOAD PRESET
 

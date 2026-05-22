@@ -470,8 +470,8 @@ def update_property(
         # Update PropertyMedia
         if property_data.media is not None:
             session.exec(
-                select(PropertyMedia).where(
-                    PropertyMedia.property_id == property_id).delete()
+                delete(PropertyMedia).where(
+                    PropertyMedia.property_id == property_id)
             )
             for media_item in property_data.media:
                 media = PropertyMedia(
@@ -484,8 +484,8 @@ def update_property(
         # Update PropertyFeature
         if property_data.feature_ids is not None:
             session.exec(
-                select(PropertyFeature).where(
-                    PropertyFeature.property_id == property_id).delete()
+                delete(PropertyFeature).where(
+                    PropertyFeature.property_id == property_id)
             )
             feature_ids = property_data.feature_ids
             if feature_ids:
@@ -794,13 +794,14 @@ def search_properties(
     district_id: Optional[int] = None,
     commune_id: Optional[int] = None,
     category_id: Optional[int] = None,
+    status: Optional[PropertyStatusEnum] = None,
     sort_by: Optional[str] = None,
     sort_order: Optional[str] = None,
     offset: int = 0,
     limit: int = 10
 ) -> "PaginatedPropertyRead":  # Use string literal for forward reference
     """
-    Search and filter properties by keyword, location, and property type with sorting.
+    Search and filter properties by keyword, location, property type, and status with sorting.
     """
     try:
         valid_sort_fields = {
@@ -846,6 +847,9 @@ def search_properties(
 
         if category_id:
             statement = statement.where(Property.category_id == category_id)
+
+        if status:
+            statement = statement.where(Property.status == status)
 
         if sort_by:
             if sort_by not in valid_sort_fields:

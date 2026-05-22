@@ -22,7 +22,7 @@ export default function LandingPage() {
 
         <div className="w-full md:w-1/3 flex flex-col space-y-4 items-center">
           <Link
-            href="/propertyowner/login"
+            href="/login"
             className="w-full bg-[#b8c75b] hover:bg-[#a3b148] text-center py-3 px-4 rounded-md text-green-900 font-medium transition-colors"
           >
             Login
@@ -36,7 +36,7 @@ export default function LandingPage() {
           </Link>
 
           <Link
-            href="/admin/login"
+            href="/login"
             className="w-full bg-[#8ba43c] hover:bg-[#7a9230] text-center py-3 px-4 rounded-md text-white font-medium transition-colors"
           >
             Admin Login

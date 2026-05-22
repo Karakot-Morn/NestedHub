@@ -39,13 +39,12 @@ export default function PropertyTable() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
 
-  const fetchProperties = useCallback(async (term: string) => {
+  const fetchProperties = useCallback(async () => {
     setIsLoading(true)
     setError("")
     try {
-      const data = await propertyApi.getOwnerListings(term)
+      const data = await propertyApi.getOwnerListings()
       setAllProperties(data.properties || [])
-      setCurrentPage(1) // Reset to first page on new search
     } catch (err) {
       setError("Failed to load properties")
       toast.error("Failed to load your properties. Please try again.")
@@ -54,19 +53,25 @@ export default function PropertyTable() {
     }
   }, [])
 
-  const debouncedFetch = useMemo(() => debounce(fetchProperties, 300), [fetchProperties])
-
   useEffect(() => {
-    debouncedFetch(searchTerm)
-  }, [searchTerm, debouncedFetch])
+    fetchProperties()
+  }, [fetchProperties])
 
+
+  const filteredProperties = useMemo(() => {
+    if (!searchTerm) return allProperties;
+    return allProperties.filter(prop => 
+      prop.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      prop.category.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [allProperties, searchTerm])
 
   const paginatedProperties = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
-    return allProperties.slice(startIndex, startIndex + itemsPerPage)
-  }, [allProperties, currentPage, itemsPerPage])
+    return filteredProperties.slice(startIndex, startIndex + itemsPerPage)
+  }, [filteredProperties, currentPage, itemsPerPage])
 
-  const totalPages = Math.ceil(allProperties.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage)
 
   const handleViewDetails = (id: string | number) => {
     router.push(`/propertyowner/property/${id}`)
@@ -83,7 +88,7 @@ export default function PropertyTable() {
         await propertyApi.deleteProperty(String(id))
         toast.success("Property deleted successfully.", { id: toastId })
         // Refetch properties after deletion
-        fetchProperties(searchTerm)
+        fetchProperties()
       } catch (error) {
         toast.error("Failed to delete property.", { id: toastId })
       }
@@ -98,6 +103,7 @@ export default function PropertyTable() {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
+    setCurrentPage(1) // Reset to first page when searching
   }
 
   return (
@@ -189,7 +195,7 @@ export default function PropertyTable() {
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-4">
           <span className="text-sm text-gray-700">
-            Showing {paginatedProperties.length} of {allProperties.length} properties
+            Showing {paginatedProperties.length} of {filteredProperties.length} properties
           </span>
           <div className="flex items-center">
             <button

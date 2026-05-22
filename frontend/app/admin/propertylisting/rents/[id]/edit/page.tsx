@@ -32,7 +32,7 @@ export default function EditRentalPropertyPage() {
           bedrooms: data.bedrooms,
           bathrooms: data.bathrooms,
           floor_area: data.floor_area,
-          status: data.status,
+          status: data.status as 'pending' | 'available' | 'rented' | 'hidden',
         });
       } catch (err) {
         setError("Failed to load property details");
@@ -59,7 +59,12 @@ export default function EditRentalPropertyPage() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await propertyApi.updateProperty(propertyId, formData);
+      const { rent_price, ...rest } = formData;
+      const payload: PropertyUpdateParams = {
+        ...rest,
+        pricing: rent_price !== undefined ? { rent_price } : undefined,
+      };
+      await propertyApi.updateProperty(propertyId, payload);
       toast.success("Property updated successfully!");
       router.push(`/admin/propertylisting/rents`);
     } catch (err) {

@@ -51,6 +51,8 @@ export function setTokens(accessToken: string, refreshToken: string) {
   if (typeof window !== "undefined") {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+    // Sync to cookie for middleware
+    document.cookie = `auth_token=${encodeURIComponent(accessToken)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; ${window.location.protocol === 'https:' ? 'Secure' : ''}`;
   }
 }
 
@@ -58,6 +60,9 @@ export function clearTokens() {
   if (typeof window !== "undefined") {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    // Clear cookies for middleware
+    document.cookie = 'auth_token=; path=/; max-age=0';
+    document.cookie = 'user=; path=/; max-age=0';
   }
 }
 
@@ -101,12 +106,16 @@ export async function fetchAuthenticated<T>(
 
   const response = await fetch(finalEndpoint, options);
 
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401) {
     console.error(
-      `Authentication error: ${response.status} - ${response.statusText}. Attempting to re-authenticate.`
+      `Authentication error: ${response.status} - ${response.statusText}. Token expired or invalid.`
     );
-    clearTokens(); // Clear tokens on unauthorized/forbidden to force re-login
-    throw new Error("Unauthorized or Forbidden. Please re-authenticate.");
+    clearTokens(); // Clear tokens on unauthorized to force re-login
+    throw new Error("Unauthorized. Please re-authenticate.");
+  }
+
+  if (response.status === 403) {
+    throw new Error("Forbidden. You do not have permission to access this resource.");
   }
 
   if (!response.ok) {
@@ -182,8 +191,8 @@ export async function fetchUnauthenticated<T>(
  * @returns The secure URL of the uploaded file.
  */
 export async function uploadFileToCloudinary(file: File): Promise<string> {
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'property_sphere_upload';
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'df2xavvu7';
 
   if (!uploadPreset || !cloudName) {
     throw new Error("Cloudinary environment variables are not set.");

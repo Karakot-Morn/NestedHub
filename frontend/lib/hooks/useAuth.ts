@@ -53,6 +53,18 @@ interface UseAuthResult {
 export function useAuth(): UseAuthResult {
   const router = useRouter();
   const [user, setUser] = useState<UserResponse | null>(null);
+
+  const setUserAndCookie = useCallback((val: UserResponse | null) => {
+    setUser(val);
+    if (typeof window !== "undefined") {
+      if (val) {
+        document.cookie = `user=${encodeURIComponent(JSON.stringify(val))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; ${window.location.protocol === 'https:' ? 'Secure' : ''}`;
+      } else {
+        document.cookie = 'user=; path=/; max-age=0';
+      }
+    }
+  }, []);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,14 +73,14 @@ export function useAuth(): UseAuthResult {
   const fetchCurrentUser = useCallback(async () => {
     const accessToken = getAccessToken();
     if (!accessToken) {
-      setUser(null);
+      setUserAndCookie(null);
       setIsAuthenticated(false);
       setIsLoading(false);
       return;
     }
     try {
       const currentUser = await getCurrentUser();
-      setUser(currentUser);
+      setUserAndCookie(currentUser);
       setIsAuthenticated(true);
       setError(null);
     } catch (err: any) {
@@ -77,7 +89,7 @@ export function useAuth(): UseAuthResult {
       if (err.message === "Unauthorized" || err.message.includes("Token expired")) {
         clearTokens();
       }
-      setUser(null);
+      setUserAndCookie(null);
       setIsAuthenticated(false);
       setError(err.message || "Failed to load user data.");
     } finally {
@@ -99,14 +111,14 @@ export function useAuth(): UseAuthResult {
         const tokenResponse: TokenResponse = await loginUser(email, password);
         setTokens(tokenResponse.access_token, tokenResponse.refresh_token);
         const currentUser = await getCurrentUser();
-        setUser(currentUser);
+        setUserAndCookie(currentUser);
         setIsAuthenticated(true);
         setError(null);
         return currentUser;
       } catch (err: any) {
         console.error("Login failed:", err);
         clearTokens();
-        setUser(null);
+        setUserAndCookie(null);
         setIsAuthenticated(false);
         setError(err.message || "Login failed. Please check your credentials.");
         throw err;
@@ -174,7 +186,7 @@ export function useAuth(): UseAuthResult {
       }
     }
     clearTokens();
-    setUser(null);
+    setUserAndCookie(null);
     setIsAuthenticated(false);
     setError(null);
     setIsLoading(false);
@@ -189,7 +201,7 @@ export function useAuth(): UseAuthResult {
         const tokenResponse: TokenResponse = await verifyEmail(data);
         setTokens(tokenResponse.access_token, tokenResponse.refresh_token);
         const currentUser = await getCurrentUser();
-        setUser(currentUser);
+        setUserAndCookie(currentUser);
         setIsAuthenticated(true);
         setError(null);
         return currentUser;
