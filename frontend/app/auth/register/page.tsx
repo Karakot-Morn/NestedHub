@@ -112,8 +112,13 @@ export default function CustomerRegisterPage() {
 
       // Log the response directly, or update this to match the actual response type
       console.log("Registration successful!", response);
-      // Redirect to a dedicated email verification page, passing the email
-      router.push(`/verify-email?email=${formData.email}`);
+      if (response.is_email_verified) {
+        setMessage(`Registration successful for ${response.email}! Logging you in...`);
+        setTimeout(() => router.push(`/login?message=Registration successful.`), 1500);
+      } else {
+        setMessage(`Registration successful for ${response.email}! Please check your email for a verification code.`);
+        router.push(`/verify-email?email=${formData.email}`);
+      }
 
     } catch (err: any) {
       console.error("Registration error:", err);

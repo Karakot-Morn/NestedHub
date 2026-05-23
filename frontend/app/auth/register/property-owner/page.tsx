@@ -125,10 +125,13 @@ export default function PropertyOwnerRegisterPage() {
       setMessage("Registering property owner account...");
       const response = await register(userCreateData);
 
-      // Use the actual response structure
-      setMessage(`Registration successful for ${response.email}! Please check your email for a verification code.`);
-      // Redirect to a dedicated email verification page
-      router.push(`/verify-email?email=${formData.email}`);
+      if (response.is_email_verified) {
+        setMessage(`Registration successful for ${response.email}! Your account is pending Admin approval.`);
+        setTimeout(() => router.push(`/login?message=Registration successful. Your account is pending Admin approval.`), 1500);
+      } else {
+        setMessage(`Registration successful for ${response.email}! Please check your email for a verification code.`);
+        router.push(`/verify-email?email=${formData.email}`);
+      }
 
     } catch (err: any) {
       console.error("Property Owner Registration error:", err);
