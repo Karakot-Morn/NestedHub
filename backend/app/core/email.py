@@ -1,7 +1,15 @@
 import smtplib
+import socket
 from email.mime.text import MIMEText
 from fastapi import HTTPException
 from app.core.config import settings
+
+# Force IPv4 for smtplib to fix 'Network is unreachable' (Errno 101) on hosts without IPv6 routing
+old_getaddrinfo = socket.getaddrinfo
+def new_getaddrinfo(*args, **kwargs):
+    responses = old_getaddrinfo(*args, **kwargs)
+    return [response for response in responses if response[0] == socket.AF_INET]
+socket.getaddrinfo = new_getaddrinfo
 
 def send_email(
     recipient: str,
