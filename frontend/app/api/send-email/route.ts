@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
     // 3. Send the email
     const info = await transporter.sendMail({
-      from: `"NestedHub" <${process.env.SMTP_USER}>`,
+      from: `"NestHub" <${process.env.SMTP_USER}>`,
       to: to,
       subject: subject,
       html: htmlBody,
