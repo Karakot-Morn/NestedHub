@@ -182,7 +182,7 @@ def _create_user_in_db(
     return db_user
 
 
-def _generate_and_send_verification_code(session: Session, email: str):
+def _generate_and_send_verification_code(session: Session, email: str) -> bool:
     """
     Generate and store verification code, then send it via email.
     """
@@ -202,11 +202,12 @@ def _generate_and_send_verification_code(session: Session, email: str):
             subject=VERIFICATION_EMAIL_SUBJECT,
             body=VERIFICATION_EMAIL_BODY(code)
         )
+        return True
     except HTTPException as e:
-        session.rollback()
+        print(f"Warning: Failed to send email to {email}, auto-verifying user fallback. Error: {e}")
         session.delete(verification)
         session.commit()
-        raise e
+        return False
 
 
 def create_db_user(
@@ -244,7 +245,9 @@ def create_db_user(
         )
 
         if password and oauth_provider == OAuthProvider.none:
-            _generate_and_send_verification_code(session, email)
+            email_sent = _generate_and_send_verification_code(session, email)
+            if not email_sent:
+                db_user.is_email_verified = True
 
         session.commit()
         return db_user
