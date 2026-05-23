@@ -1,15 +1,8 @@
-import smtplib
-import socket
-from email.mime.text import MIMEText
+import json
+import urllib.request
+import urllib.error
 from fastapi import HTTPException
 from app.core.config import settings
-
-# Force IPv4 for smtplib to fix 'Network is unreachable' (Errno 101) on hosts without IPv6 routing
-old_getaddrinfo = socket.getaddrinfo
-def new_getaddrinfo(*args, **kwargs):
-    responses = old_getaddrinfo(*args, **kwargs)
-    return [response for response in responses if response[0] == socket.AF_INET]
-socket.getaddrinfo = new_getaddrinfo
 
 def send_email(
     recipient: str,
@@ -17,28 +10,47 @@ def send_email(
     body: str
 ) -> None:
     try:
-        msg = MIMEText(body, "html")
-        msg['Subject'] = subject
-        msg['From'] = f"NestedHub <{settings.EMAILS_FROM_EMAIL}>"
-        msg['To'] = recipient
+        vercel_api_url = f"{settings.FRONTEND_HOST}/api/send-email"
+        secret = settings.EMAIL_API_SECRET
 
-        # Check environment before deciding how to send the email
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
-            if settings.SMTP_HOST == "mailcatcher" or (settings.ENVIRONMENT == "local" and not settings.SMTP_USER):
-                # No authentication required for MailCatcher in local environment
-                print("Using MailCatcher or unauthenticated SMTP server")
-            else:
-                # Use authentication if credentials are provided
-                if settings.SMTP_TLS:
-                    server.starttls()
+        if not secret:
+            print("Warning: EMAIL_API_SECRET not set. Email bridge may fail if unauthorized.")
 
-                if settings.SMTP_USER and settings.SMTP_PASSWORD:
-                    server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-                    
-                print(f"Using SMTP server: {settings.SMTP_HOST}")
+        payload = {
+            "to": recipient,
+            "subject": subject,
+            "htmlBody": body
+        }
+        data = json.dumps(payload).encode("utf-8")
 
-            server.send_message(msg)
+        req = urllib.request.Request(
+            vercel_api_url,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {secret}"
+            },
+            method="POST"
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                if response.status not in (200, 201):
+                    raise HTTPException(status_code=500, detail=f"Email Bridge Failed: {response.status}")
+        except urllib.error.HTTPError as e:
+            error_text = e.read().decode()
+            print(f"Error from Vercel Email API: {e.code} - {error_text}")
+            raise HTTPException(status_code=500, detail=f"Email Bridge Failed: {e.code}")
+        except urllib.error.URLError as e:
+            print(f"Failed to connect to Vercel API: {e.reason}")
+            raise HTTPException(status_code=500, detail=f"Failed to reach Email Bridge: {e.reason}")
+
+        print(f"Email successfully sent to {recipient} via Vercel bridge.")
+
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"Failed to send email via bridge: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to send verification email: {str(e)}"
