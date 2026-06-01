@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Loader2, UploadCloud, CheckCircle, ArrowLeft, ArrowRight, Save } from "lucide-react";
+import { Loader2, UploadCloud, CheckCircle, ArrowLeft, ArrowRight, Save, X } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Sidebar from "@/component/dashoboadpropertyowner/sidebar";
 import { propertyApi, type PropertyUpdateParams } from '@/lib/api/property';
@@ -48,6 +48,7 @@ export default function EditPropertyPage() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<EditFormData | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
   // --- Dynamic Data State ---
   const [categories, setCategories] = useState<PropertyCategory[]>([]);
@@ -108,10 +109,10 @@ export default function EditPropertyPage() {
           street_number: apiProperty.location?.street_number || '',
           latitude: Number(apiProperty.location?.latitude) || 0,
           longitude: Number(apiProperty.location?.longitude) || 0,
-          // Flat IDs from the API response (not nested objects)
-          city_id: apiProperty.location?.city_id,
-          district_id: apiProperty.location?.district_id,
-          commune_id: apiProperty.location?.commune_id,
+          // Mapped IDs from the Property type
+          city_id: apiProperty.location?.city?.city_id,
+          district_id: apiProperty.location?.district?.district_id,
+          commune_id: apiProperty.location?.commune?.commune_id,
           media: (apiProperty.media || []),
         });
 
@@ -185,6 +186,15 @@ export default function EditPropertyPage() {
     }
   };
 
+  const handleRemoveImage = (urlToRemove: string) => {
+    if (formData) {
+      setFormData(prev => ({
+        ...prev!,
+        media: prev!.media.filter(m => m.media_url !== urlToRemove)
+      }));
+    }
+  };
+
   const handleFinalSubmit = async () => {
     if (!formData || !formData.category_id || !formData.city_id || !formData.district_id || !formData.commune_id) {
         toast.error("Please ensure all location and category fields are selected.");
@@ -248,7 +258,15 @@ export default function EditPropertyPage() {
                         <div><label>Bathrooms</label><input name="bathrooms" type="number" value={formData.bathrooms} onChange={handleChange} className="w-full p-2 border rounded" /></div>
                         <div><label>Floor Area (m²)</label><input name="floor_area" type="number" value={formData.floor_area} onChange={handleChange} className="w-full p-2 border rounded" /></div>
                         <div><label>Land Area (m²)</label><input name="land_area" type="number" value={formData.land_area} onChange={handleChange} className="w-full p-2 border rounded" /></div>
-                </div>
+                    </div>
+                    <div>
+                        <label>Property Status</label>
+                        <select name="status" value={formData.status} onChange={handleChange} className="w-full p-2 border rounded bg-white text-gray-800">
+                            <option value="available">Available</option>
+                            <option value="rented">Rented</option>
+                            <option value="hidden">Hidden</option>
+                        </select>
+                    </div>
                 </div>
             );
         case 1: // Location
@@ -291,8 +309,24 @@ export default function EditPropertyPage() {
                 <div>
                     <h2 className="text-xl font-semibold mb-4">Images</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        {formData.media.map(m => <img key={m.media_url} src={m.media_url} alt="property" className="w-full h-32 object-cover rounded"/>)}
-                </div>
+                        {formData.media.map(m => (
+                          <div key={m.media_url} className="relative group">
+                            <img 
+                               src={m.media_url} 
+                               alt="property" 
+                               className="w-full h-32 object-cover rounded cursor-pointer hover:opacity-90"
+                               onClick={() => setSelectedImage(m.media_url)}
+                            />
+                            <button
+                              onClick={() => handleRemoveImage(m.media_url)}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none shadow-md opacity-90 transition-opacity"
+                              title="Remove image"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                    </div>
                     <label htmlFor="image-upload" className="flex justify-center items-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
                         {isUploading ? <Loader2 className="h-8 w-8 animate-spin"/> : <UploadCloud className="h-8 w-8 text-gray-400"/>}
                     </label>
@@ -339,6 +373,23 @@ export default function EditPropertyPage() {
         <div className="p-8 border rounded-lg bg-white min-h-[400px]">
             {renderStepContent()}
           </div>
+
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="relative max-w-4xl w-full h-auto">
+              <button 
+                className="absolute -top-10 right-0 text-white hover:text-gray-300"
+                onClick={() => setSelectedImage(null)}
+              >
+                <X className="h-8 w-8" />
+              </button>
+              <img src={selectedImage} alt="Preview" className="w-full h-auto max-h-[85vh] object-contain rounded-lg" />
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-between mt-8">
             <button onClick={() => setCurrentStep(s => Math.max(0, s-1))} disabled={currentStep === 0} className="flex items-center px-6 py-2 border rounded disabled:opacity-50"><ArrowLeft className="h-5 w-5 mr-2"/> Back</button>

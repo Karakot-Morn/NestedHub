@@ -107,8 +107,8 @@ export async function fetchAuthenticated<T>(
   const response = await fetch(finalEndpoint, options);
 
   if (response.status === 401) {
-    console.error(
-      `Authentication error: ${response.status} - ${response.statusText}. Token expired or invalid.`
+    console.warn(
+      `Authentication warning: ${response.status} - ${response.statusText}. Token expired or invalid.`
     );
     clearTokens(); // Clear tokens on unauthorized to force re-login
     throw new Error("Unauthorized. Please re-authenticate.");

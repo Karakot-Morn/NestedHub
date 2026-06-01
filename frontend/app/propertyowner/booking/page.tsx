@@ -56,6 +56,7 @@ export default function BookingManagementPage() {
   const [selectedRequest, setSelectedRequest] = useState<ViewingRequestWithDetails | null>(null);
   const [denialReason, setDenialReason] = useState("");
   const [denialReasons, setDenialReasons] = useState<DenialReason[]>([]);
+  const [isPendingApproval, setIsPendingApproval] = useState(false);
 
   useEffect(() => {
     fetchViewingRequests();
@@ -152,9 +153,13 @@ export default function BookingManagementPage() {
       );
       
       setViewingRequests(requestsWithDetails);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching viewing requests:', error);
-      toast.error('Failed to load viewing requests');
+      if (error.message.includes('403') || error.message.includes('Forbidden')) {
+        setIsPendingApproval(true);
+      } else {
+        toast.error('Failed to load viewing requests');
+      }
     } finally {
       setLoading(false);
     }
@@ -227,6 +232,27 @@ export default function BookingManagementPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-800 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading viewing requests...</p>
           </div>
+        </div>
+      </Sidebar>
+    );
+  }
+
+  if (isPendingApproval) {
+    return (
+      <Sidebar>
+        <div className="flex flex-col items-center justify-center min-h-[80vh] p-6">
+          <Card className="max-w-md p-8 text-center bg-yellow-50 border-yellow-200">
+            <div className="flex justify-center mb-4">
+              <div className="bg-yellow-100 p-3 rounded-full">
+                <Clock className="h-10 w-10 text-yellow-600" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-yellow-800 mb-2">Account Pending Approval</h2>
+            <p className="text-yellow-700">
+              Your property owner account is currently pending approval by an administrator.
+              You will be able to manage viewing requests once your account is fully verified.
+            </p>
+          </Card>
         </div>
       </Sidebar>
     );

@@ -8,6 +8,7 @@ import {
   CheckCircle,
   ArrowLeft,
   ArrowRight,
+  X,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -70,6 +71,7 @@ export default function CreatePropertyPage() {
 
   // --- Form State ---
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // --- Dynamic Data State ---
   const [categories, setCategories] = useState<
@@ -209,6 +211,13 @@ export default function CreatePropertyPage() {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleRemoveImage = (urlToRemove: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      media: prev.media.filter((m) => m.media_url !== urlToRemove),
+    }));
   };
 
   const handleFinalSubmit = async () => {
@@ -525,12 +534,21 @@ export default function CreatePropertyPage() {
             <h2 className="text-xl font-semibold mb-4">Images</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               {formData.media.map((m) => (
-                <img
-                  key={m.media_url}
-                  src={m.media_url}
-                  alt="property"
-                  className="w-full h-32 object-cover rounded"
-                />
+                <div key={m.media_url} className="relative group">
+                  <img
+                    src={m.media_url}
+                    alt="property"
+                    className="w-full h-32 object-cover rounded cursor-pointer hover:opacity-90"
+                    onClick={() => setSelectedImage(m.media_url)}
+                  />
+                  <button
+                    onClick={() => handleRemoveImage(m.media_url)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none shadow-md opacity-90 transition-opacity"
+                    title="Remove image"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               ))}
             </div>
             <label
@@ -634,6 +652,23 @@ export default function CreatePropertyPage() {
         <div className="p-8 border rounded-lg bg-white min-h-[400px]">
           {renderStepContent()}
         </div>
+
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="relative max-w-4xl w-full h-auto">
+              <button 
+                className="absolute -top-10 right-0 text-white hover:text-gray-300"
+                onClick={() => setSelectedImage(null)}
+              >
+                <X className="h-8 w-8" />
+              </button>
+              <img src={selectedImage} alt="Preview" className="w-full h-auto max-h-[85vh] object-contain rounded-lg" />
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-between mt-8">
           <button

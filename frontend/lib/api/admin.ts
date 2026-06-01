@@ -99,8 +99,13 @@ export const adminApi = {
       queryParams.append('hard_delete', 'true');
     }
 
+    const queryString = queryParams.toString();
+    const url = queryString 
+      ? `${API_BASE_URL}/api/users/${userId}?${queryString}`
+      : `${API_BASE_URL}/api/users/${userId}`;
+
     const response = await fetch(
-      `${API_BASE_URL}/api/users/${userId}?${queryParams.toString()}`,
+      url,
       {
         method: 'DELETE',
         headers: getAuthHeaders(),

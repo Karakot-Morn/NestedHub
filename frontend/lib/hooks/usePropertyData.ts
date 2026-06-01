@@ -125,8 +125,18 @@ export function usePropertyData(
 
         setProperties((prev) => {
           const newProperties = offset === 0 ? mappedProperties : [...prev, ...mappedProperties];
-          console.log("usePropertyData: Setting properties state. Total properties after update:", newProperties.length);
-          return newProperties;
+          
+          // Deduplicate based on property id to prevent React key warnings
+          const uniquePropertiesMap = new Map();
+          newProperties.forEach(p => {
+             if (!uniquePropertiesMap.has(p.id)) {
+                 uniquePropertiesMap.set(p.id, p);
+             }
+          });
+          const deduplicatedProperties = Array.from(uniquePropertiesMap.values());
+          
+          console.log("usePropertyData: Setting properties state. Total properties after update:", deduplicatedProperties.length);
+          return deduplicatedProperties;
         });
         setTotal(data.total || 0);
         console.log("usePropertyData: Total properties set to:", data.total || 0);

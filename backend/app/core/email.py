@@ -10,7 +10,9 @@ def send_email(
     body: str
 ) -> None:
     try:
-        vercel_api_url = f"{settings.FRONTEND_HOST}/api/send-email"
+        # The backend runs in a Docker container, so it needs to use host.docker.internal to reach the frontend running on the host machine
+        base_url = settings.FRONTEND_HOST.replace("localhost", "host.docker.internal")
+        vercel_api_url = f"{base_url}/api/send-email"
         secret = settings.EMAIL_API_SECRET
 
         if not secret:

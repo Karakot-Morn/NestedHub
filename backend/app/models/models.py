@@ -58,11 +58,11 @@ class User(SQLModel, table=True):
     )
 
     # Relationships
-    properties: List["Property"] = Relationship(back_populates="user")
-    wishlist_items: List["WishList"] = Relationship(back_populates="user")
-    property_views: List["PropertyView"] = Relationship(back_populates="user")
-    reviews: List["Review"] = Relationship(back_populates="user")
-    viewing_requests: List["ViewingRequest"] = Relationship(back_populates="user")
+    properties: List["Property"] = Relationship(back_populates="user", cascade_delete=True)
+    wishlist_items: List["WishList"] = Relationship(back_populates="user", cascade_delete=True)
+    property_views: List["PropertyView"] = Relationship(back_populates="user", cascade_delete=True)
+    reviews: List["Review"] = Relationship(back_populates="user", cascade_delete=True)
+    viewing_requests: List["ViewingRequest"] = Relationship(back_populates="user", cascade_delete=True)
 
 
 class PropertyCategory(SQLModel, table=True):
@@ -175,18 +175,18 @@ class Property(SQLModel, table=True):
     property_category: "PropertyCategory" = Relationship(
         back_populates="properties")
     property_location: "PropertyLocation" = Relationship(
-        back_populates="property")
+        back_populates="property", cascade_delete=True)
     features: List["Feature"] = Relationship(
         back_populates="properties", link_model=PropertyFeature)
     pricing: "PropertyPricing" = Relationship(
-        back_populates="property")
+        back_populates="property", cascade_delete=True)
     property_medias: List["PropertyMedia"] = Relationship(
-        back_populates="property")
-    wishlisted_by: List["WishList"] = Relationship(back_populates="property")
-    views: List["PropertyView"] = Relationship(back_populates="property")
-    reviews: List["Review"] = Relationship(back_populates="property")
+        back_populates="property", cascade_delete=True)
+    wishlisted_by: List["WishList"] = Relationship(back_populates="property", cascade_delete=True)
+    views: List["PropertyView"] = Relationship(back_populates="property", cascade_delete=True)
+    reviews: List["Review"] = Relationship(back_populates="property", cascade_delete=True)
     viewing_requests: List["ViewingRequest"] = Relationship(
-        back_populates="property")
+        back_populates="property", cascade_delete=True)
 
 
 class WishList(SQLModel, table=True):

@@ -84,7 +84,7 @@ export function useAuth(): UseAuthResult {
       setIsAuthenticated(true);
       setError(null);
     } catch (err: any) {
-      console.error("Failed to fetch current user:", err);
+      console.warn("User not authenticated:", err.message);
       // Only clear tokens if the error genuinely means the token is bad/expired
       if (err.message === "Unauthorized" || err.message.includes("Token expired")) {
         clearTokens();

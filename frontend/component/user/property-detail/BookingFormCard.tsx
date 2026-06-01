@@ -87,11 +87,16 @@ export function BookingFormCard({ propertyId, propertyStatus }: BookingFormCardP
       const dateTime = new Date(selectedDate);
       const [hours, minutes] = selectedTime.split(':').map(Number);
       dateTime.setHours(hours, minutes, 0, 0);
-      const requested_time_iso = dateTime.toISOString();
+      
+      // Format as local time string to prevent UTC conversion issues
+      const year = dateTime.getFullYear();
+      const month = String(dateTime.getMonth() + 1).padStart(2, '0');
+      const day = String(dateTime.getDate()).padStart(2, '0');
+      const requested_time_local = `${year}-${month}-${day}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
 
       await createRequest({
         property_id: propIdAsNumber,
-        requested_time: requested_time_iso,
+        requested_time: requested_time_local,
         message: message.trim() === "" ? undefined : message.trim() // ADDED: Include message, make it undefined if empty
       });
 
@@ -227,7 +232,7 @@ export function BookingFormCard({ propertyId, propertyStatus }: BookingFormCardP
                 </label>
                 <Textarea
                   id="viewing-message"
-                  placeholder="e.g., 'I am very interested in this property and would like to move in by next month.'"
+                  placeholder="e.g., 'I am very interested in viewing this property to check the room and amenities.'"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="min-h-[80px]"

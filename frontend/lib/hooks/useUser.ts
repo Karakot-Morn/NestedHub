@@ -45,7 +45,7 @@ export function useUser(): UseUserResult {
         setIsAuthenticated(false);
       }
     } catch (err: any) {
-      console.error("Failed to fetch user:", err);
+      console.warn("User not authenticated:", err.message);
       // It's important that getCurrentUser handles token clearing on 401/403
       // If it doesn't, you might need to check the error message here.
       setUser(null);

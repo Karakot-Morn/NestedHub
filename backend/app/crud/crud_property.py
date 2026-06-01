@@ -1,6 +1,6 @@
 import logging
 from decimal import Decimal
-from sqlmodel import Session, select, func, delete
+from sqlmodel import Session, select, func, delete, cast, String
 from collections import defaultdict
 from app.models.enums import UserRole, PropertyStatusEnum
 from app.models.property_schemas import (
@@ -833,7 +833,8 @@ def search_properties(
             statement = statement.where(
                 (Property.title.ilike(keyword_like)) |
                 (Property.description.ilike(keyword_like)) |
-                (Feature.feature_name.ilike(keyword_like))
+                (Feature.feature_name.ilike(keyword_like)) |
+                (cast(PropertyPricing.rent_price, String).ilike(keyword_like))
             )
 
         if city_id:

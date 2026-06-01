@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { Loader2, User } from "lucide-react";
+import { propertyOwnerApi } from "@/lib/api/propertyOwner";
 
 import Sidebar from "@/component/dashoboadpropertyowner/sidebar";
 import { useCurrentUser } from "@/lib/hooks/useCurrentUser";
@@ -15,6 +16,25 @@ export default function SettingsPage() {
   const [passwordInfo, setPasswordInfo] = useState({ newPassword: "", confirmPassword: "" });
   const [isInfoSubmitting, setIsInfoSubmitting] = useState(false);
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploadingAvatar(true);
+    const toastId = toast.loading("Uploading new profile picture...");
+    try {
+      const result = await propertyOwnerApi.uploadImageToCloudinary(file);
+      await updateProfile({ profile_picture_url: result.secure_url });
+      refetchCurrentUser();
+      toast.success("Profile picture updated!", { id: toastId });
+    } catch (error: any) {
+      toast.error(error.message || "Upload failed.", { id: toastId });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   useEffect(() => {
     if (currentUser) {
@@ -99,9 +119,11 @@ export default function SettingsPage() {
         <div className="mb-8">
           <h2 className="text-lg font-medium mb-4">User Profile</h2>
           <div className="flex flex-col md:flex-row gap-6 bg-white p-6 rounded-lg border">
-            <div className="flex-shrink-0">
-              <div className="relative w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow">
-                {currentUser?.profile_picture_url && currentUser.profile_picture_url.trim() !== "" ? (
+            <div className="flex-shrink-0 flex flex-col items-center">
+              <label className="relative w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow cursor-pointer hover:opacity-80 transition-opacity">
+                {isUploadingAvatar ? (
+                  <Loader2 className="h-8 w-8 text-gray-500 animate-spin" />
+                ) : currentUser?.profile_picture_url && currentUser.profile_picture_url.trim() !== "" ? (
                   <Image
                     src={currentUser.profile_picture_url}
                     alt="User Avatar"
@@ -111,7 +133,9 @@ export default function SettingsPage() {
                 ) : (
                   <User className="h-12 w-12 text-gray-500" />
                 )}
-              </div>
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+              </label>
+              <span className="text-xs text-gray-500 mt-2">Click to change</span>
             </div>
 
             <div className="flex-grow max-w-md">

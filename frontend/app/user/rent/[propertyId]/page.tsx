@@ -281,7 +281,7 @@ export default function PropertyDetailPage() {
             </button>
             <div className="p-6 md:p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Book Your Stay
+                Schedule a Viewing
               </h2>
               <BookingFormCard propertyId={String(property.property_id)} propertyStatus={property.status} />
             </div>

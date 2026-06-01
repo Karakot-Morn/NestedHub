@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   useUserUpcomingViewingRequests,
   useUserViewingRequests,
+  useDeleteViewingRequest,
 } from "@/lib/hooks/useViewingRequests";
 import { ViewingRequestResponse } from "@/lib/api/viewingrequest";
 import {
@@ -31,9 +32,11 @@ type Tab = "upcoming" | "pending" | "all";
 // --- New Component: ViewingRequestCard ---
 interface ViewingRequestCardProps {
   request: ViewingRequestResponse;
+  onCancelSuccess?: () => void;
 }
 
-const ViewingRequestCard: React.FC<ViewingRequestCardProps> = ({ request }) => {
+const ViewingRequestCard: React.FC<ViewingRequestCardProps> = ({ request, onCancelSuccess }) => {
+  const { mutate: cancelRequest, loading: isCanceling } = useDeleteViewingRequest();
   const { property, isLoading, error } = useProperty(
     String(request.property_id)
   );
@@ -76,6 +79,17 @@ const ViewingRequestCard: React.FC<ViewingRequestCardProps> = ({ request }) => {
     }
     return "/placeholder-property.jpg"; // Default placeholder if no image available
   }, [property]);
+
+  const handleCancel = async () => {
+    if (confirm("Are you sure you want to cancel this viewing request?")) {
+      try {
+        await cancelRequest(request.request_id);
+        if (onCancelSuccess) onCancelSuccess();
+      } catch (err) {
+        alert("Failed to cancel the request. Please try again.");
+      }
+    }
+  };
 
   if (isLoading) {
     return (
@@ -195,6 +209,19 @@ const ViewingRequestCard: React.FC<ViewingRequestCardProps> = ({ request }) => {
               <span className="font-semibold">Your Message:</span> "
               {request.message}"
             </p>
+          )}
+          
+          {request.status === "pending" && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleCancel}
+                disabled={isCanceling}
+                className="text-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 py-2 px-4 rounded-lg font-medium transition-colors flex items-center"
+              >
+                {isCanceling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
+                {isCanceling ? "Canceling..." : "Cancel Request"}
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -340,7 +367,11 @@ export default function ViewingRequestsPage() {
     return (
       <div className="flex flex-col space-y-6">
         {requestsToDisplay.map((request) => (
-          <ViewingRequestCard key={request.request_id} request={request} />
+          <ViewingRequestCard 
+            key={request.request_id} 
+            request={request} 
+            onCancelSuccess={() => window.location.reload()} 
+          />
         ))}
       </div>
     );
