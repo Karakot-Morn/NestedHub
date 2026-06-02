@@ -32,6 +32,11 @@ export default function DashboardPage() {
         console.error('Error fetching dashboard stats:', err);
         if (err.message && (err.message.includes('403') || err.message.includes('Forbidden'))) {
           setError('403');
+        } else if (err.message && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
+          // Token expired or invalid
+          document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          window.location.href = '/login';
         } else {
           setError('Failed to load dashboard statistics');
         }

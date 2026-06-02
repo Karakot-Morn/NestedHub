@@ -89,7 +89,7 @@ def create_review(session: Session, user_id: int, review: ReviewCreate) -> Revie
         property_id=review.property_id,
         rating=review.rating,
         comment=review.comment,
-        status=ReviewStatusEnum.pending,
+        status=ReviewStatusEnum.approved,
         created_at=datetime.now(timezone.utc)
     )
     
@@ -97,7 +97,8 @@ def create_review(session: Session, user_id: int, review: ReviewCreate) -> Revie
     session.commit()
     session.refresh(review_db)
     
-    # No need to update rating here since the review is pending
+    # Update rating immediately since the review is auto-approved
+    update_property_rating(session, review.property_id)
     return review_db
 
 def get_user_reviews(session: Session, user_id: int) -> list[Review]:

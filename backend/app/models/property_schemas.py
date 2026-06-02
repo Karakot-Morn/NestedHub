@@ -45,6 +45,8 @@ class PropertyOwnerListing(BaseModel):
     category: str  # PropertyCategory.category_name
     status: PropertyStatusEnum
     date_listed: datetime
+    rent_price: Decimal = Decimal("0.00")
+    thumbnail_url: Optional[str] = None
 
 
 class PropertyOwnerListingsResponse(BaseModel):

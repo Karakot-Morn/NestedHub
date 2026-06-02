@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Edit, Eye, Trash2, ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react"
+import { Edit, Eye, Trash2, ChevronLeft, ChevronRight, Loader2, Search, Home } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { propertyApi } from '@/lib/api/property'
 
@@ -27,6 +27,8 @@ interface PropertyListing {
   category: string;
   status: string;
   date_listed: string;
+  rent_price: number | string;
+  thumbnail_url?: string;
 }
 
 export default function PropertyTable() {

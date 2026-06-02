@@ -96,8 +96,9 @@ export default function BookingManagementPage() {
   // Fetch user details by ID
   const fetchUserDetails = async (userId: number): Promise<User | null> => {
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`,
+        `${baseUrl}/api/users/${userId}`,
         {
           headers: await propertyOwnerApi.getAuthHeaders(),
           credentials: 'include',
@@ -115,28 +116,41 @@ export default function BookingManagementPage() {
   // Fetch property details by ID
   const fetchPropertyDetails = async (propertyId: number): Promise<Property | null> => {
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/properties/${propertyId}`,
+        `${baseUrl}/api/properties/${propertyId}`,
         {
           headers: await propertyOwnerApi.getAuthHeaders(),
           credentials: 'include',
         }
       );
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        const loc = data.location;
+        const addressParts = [];
+        if (loc?.street_number) addressParts.push(loc.street_number);
+        if (loc?.commune_name) addressParts.push(loc.commune_name);
+        if (loc?.district_name) addressParts.push(loc.district_name);
+        if (loc?.city_name) addressParts.push(loc.city_name);
+        
+        return {
+          property_id: data.property_id,
+          title: data.title,
+          address: addressParts.length > 0 ? addressParts.join(', ') : 'Address not available',
+          description: data.description
+        };
       }
     } catch (error) {
       console.error('Error fetching property details:', error);
     }
     return null;
   };
-
   const fetchViewingRequests = async () => {
     try {
       setLoading(true);
       const requests = await propertyOwnerApi.getOwnerViewingRequests();
       
-      // Fetch user and property details for each request
+      // Fetch user and property details for each request to get the full address
       const requestsWithDetails = await Promise.all(
         requests.map(async (request: ViewingRequest) => {
           const [user, property] = await Promise.all([

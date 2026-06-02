@@ -1,3 +1,4 @@
+from sqlalchemy.orm import selectinload
 from typing import Optional, List
 from sqlmodel import Session, select
 from app.models.models import ViewingRequest, User, Property
@@ -181,6 +182,7 @@ def get_owner_viewing_requests(db: Session, user_id: int) -> List[ViewingRequest
     # Return viewing requests for properties owned by the user
     statement = (
         select(ViewingRequest)
+        .options(selectinload(ViewingRequest.property), selectinload(ViewingRequest.user))
         .join(Property, ViewingRequest.property_id == Property.property_id)
         .where(Property.user_id == user_id)
     )
@@ -191,6 +193,7 @@ def get_owner_upcoming_viewings_request(db: Session, user_id: int) -> List[Viewi
     current_time = datetime.now(timezone.utc)
     statement = (
         select(ViewingRequest)
+        .options(selectinload(ViewingRequest.property), selectinload(ViewingRequest.user))
         .join(Property, ViewingRequest.property_id == Property.property_id)
         .where(Property.user_id == user_id)
         .where(ViewingRequest.requested_time > current_time)

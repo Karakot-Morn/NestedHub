@@ -836,6 +836,8 @@ def search_properties(
                 (Feature.feature_name.ilike(keyword_like)) |
                 (cast(PropertyPricing.rent_price, String).ilike(keyword_like))
             )
+            # Prevent duplicate properties due to outerjoin on features
+            statement = statement.distinct()
 
         if city_id:
             statement = statement.where(PropertyLocation.city_id == city_id)
@@ -1125,6 +1127,7 @@ def get_owner_properties(session: Session, user: User) -> List[PropertyOwnerList
     # Fetch properties with category
     statement = (
         select(Property, PropertyCategory)
+        .options(selectinload(Property.pricing), selectinload(Property.property_medias))
         .join(PropertyCategory, PropertyCategory.category_id == Property.category_id)
         .where(Property.user_id == user.user_id)
     )
@@ -1132,16 +1135,27 @@ def get_owner_properties(session: Session, user: User) -> List[PropertyOwnerList
     results = session.exec(statement).all()
 
     # Structure response
-    properties = [
-        PropertyOwnerListing(
-            property_id=property.property_id,
-            title=property.title,
-            category=category.category_name,
-            status=property.status,
-            date_listed=property.listed_at
+    properties = []
+    for property, category in results:
+        thumbnail_url = None
+        if property.property_medias:
+            # Try to find a thumbnail, or just use the first image
+            thumbnail_url = property.property_medias[0].media_url
+            
+        rent_price = property.pricing.rent_price if property.pricing else Decimal("0.00")
+        
+        properties.append(
+            PropertyOwnerListing(
+                property_id=property.property_id,
+                title=property.title,
+                category=category.category_name,
+                status=property.status,
+                date_listed=property.listed_at,
+                rent_price=rent_price,
+                thumbnail_url=thumbnail_url
+            )
         )
-        for property, category in results
-    ]
+
     return properties
 
 

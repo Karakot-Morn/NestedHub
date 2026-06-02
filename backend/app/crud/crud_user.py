@@ -202,11 +202,12 @@ def _generate_and_send_verification_code(session: Session, email: str):
             subject=VERIFICATION_EMAIL_SUBJECT,
             body=VERIFICATION_EMAIL_BODY(code)
         )
-    except HTTPException as e:
-        session.rollback()
-        session.delete(verification)
-        session.commit()
-        raise e
+    except Exception as e:
+        # If email fails (e.g. timeout), do NOT delete the user or verification code
+        # because the email might actually be sent but just took too long, 
+        # or the user can manually request a new code.
+        print(f"Warning: Email send returned an error, but user was created: {e}")
+        # We don't raise here, so registration succeeds and the user can request a new code if needed.
 
 
 def create_db_user(

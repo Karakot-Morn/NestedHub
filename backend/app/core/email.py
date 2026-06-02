@@ -36,7 +36,7 @@ def send_email(
         )
 
         try:
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=30) as response:
                 if response.status not in (200, 201):
                     raise HTTPException(status_code=500, detail=f"Email Bridge Failed: {response.status}")
         except urllib.error.HTTPError as e:

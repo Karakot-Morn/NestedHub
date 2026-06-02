@@ -207,7 +207,13 @@ export const propertyApi = {
       }
     );
     if (!response.ok) {
-      throw new Error('Failed to fetch property stats');
+      if (response.status === 403) {
+        throw new Error('403 Forbidden');
+      }
+      if (response.status === 401) {
+        throw new Error('401 Unauthorized');
+      }
+      throw new Error(`Failed to fetch property stats: ${response.status}`);
     }
     return response.json();
   },

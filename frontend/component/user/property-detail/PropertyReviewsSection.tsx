@@ -349,21 +349,25 @@ export function PropertyReviewsSection({
                   >
                     Your Rating:
                   </Label>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Slider
-                      id="rating"
-                      min={1}
-                      max={5}
-                      step={1}
-                      value={[newRating]}
-                      onValueChange={(val) => {
-                        setNewRating(val[0]);
-                      }}
-                      className="w-[150px]"
-                    />
-                    <span className="text-lg font-bold">
-                      {newRating}{" "}
-                      <Star className="inline-block w-5 h-5 text-yellow-400 fill-yellow-400" />
+                  <div className="flex items-center space-x-1 mt-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewRating(star)}
+                        className="p-1 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 rounded-full"
+                      >
+                        <Star
+                          className={`w-8 h-8 ${
+                            star <= newRating
+                              ? "text-yellow-400 fill-yellow-400"
+                              : "text-gray-300"
+                          } transition-colors duration-200`}
+                        />
+                      </button>
+                    ))}
+                    <span className="ml-3 text-sm font-medium text-gray-600">
+                      {newRating} out of 5
                     </span>
                   </div>
                 </div>
